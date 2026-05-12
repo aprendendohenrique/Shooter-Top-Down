@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 class Player:
@@ -22,14 +24,28 @@ class Player:
         self.moving_left = False
 
     def update(self):
+
+        x_vector = 0
+        y_vector = 0
+
         if self.moving_down:
-            self.y += self.settings.player_speed
+            y_vector += 1
         if self.moving_up:
-            self.y += self.settings.player_speed * -1
+            y_vector -= 1
         if self.moving_right:
-            self.x += self.settings.player_speed
+            x_vector += 1
         if self.moving_left:
-            self.x += self.settings.player_speed * -1
+            x_vector -= 1
+
+        if x_vector != 0 or y_vector != 0:
+            mag = math.sqrt(x_vector**2 + y_vector**2)
+
+            y_vector /= mag
+            x_vector /= mag
+
+            self.y += y_vector * self.settings.player_speed
+            self.x += x_vector * self.settings.player_speed
+
         self.rect.x = self.x
         self.rect.y = self.y
 
