@@ -11,4 +11,4 @@ class Settings:
         self.background_color = 0, 125, 0
 
         # Player Settings
-        self.player_speed = 2
+        self.player_speed = 8

@@ -1,0 +1,44 @@
+import math
+
+import pygame
+from numpy.ma.core import angle
+
+
+class Weapon:
+    """The class that create and manages the player's weapon."""
+
+    def __init__(self, st_game, player):
+        self.screen = st_game.screen
+        self.screen_rect = st_game.screen_rect
+        self.settings = st_game.settings
+        self.player = player
+
+        self.color = 50, 50, 50
+        self.weapon_width = 55
+        self.weapon_height = 12
+        self.distance = 40
+
+        self.rect = pygame.Rect(0, 0, self.weapon_width, self.weapon_height)
+
+        self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
+
+    def update(self):
+        self.rect.center = self.player.rect.center
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        dx = mouse_x - self.player.rect.centerx
+        dy = mouse_y - self.player.rect.centery
+
+        angle = math.atan2(dy, dx)
+
+        weapon_x = self.player.rect.centerx + math.cos(angle) * self.distance
+        weapon_y = self.player.rect.centery + math.sin(angle) * self.distance
+
+        angle = math.degrees(angle)
+
+        self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
+        self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
+
+    def drawme(self):
+        pygame.draw.rect(self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height))
+        self.screen.blit(self.rotated_surface, self.rotated_rect)

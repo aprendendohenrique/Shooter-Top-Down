@@ -4,6 +4,7 @@ import pygame
 
 from settings import Settings
 from player import Player
+from weapon import Weapon
 
 
 class ShooterTopdown:
@@ -20,17 +21,20 @@ class ShooterTopdown:
 
         # Objects
         self.player = Player(self)
+        self.weapon = Weapon(self, self.player)
 
     def run_game(self):
         while True:
             self._check_events()
             self.player.update()
+            self.weapon.update()
             self._update_screen()
             self.clock.tick(60)
 
     def _update_screen(self):
         self.screen.fill(self.settings.background_color)
         self.player.drawme()
+        self.weapon.drawme()
         pygame.display.flip()
 
     def _check_events(self):
