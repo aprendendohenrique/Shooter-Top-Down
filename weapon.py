@@ -8,6 +8,7 @@ class Weapon:
     """The class that create and manages the player's weapon."""
 
     def __init__(self, st_game, player):
+        """All the needed variables"""
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
@@ -24,6 +25,8 @@ class Weapon:
 
     def update(self):
         self.rect.center = self.player.rect.center
+
+        # Get mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         dx = mouse_x - self.player.rect.centerx

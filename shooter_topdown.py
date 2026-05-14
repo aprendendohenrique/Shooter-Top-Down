@@ -25,16 +25,28 @@ class ShooterTopdown:
 
     def run_game(self):
         while True:
+            # Check key events
             self._check_events()
+
+            # Player update
             self.player.update()
             self.weapon.update()
+
+            # Update everything to the screen
             self._update_screen()
+
+            # FPS
             self.clock.tick(60)
 
     def _update_screen(self):
+        # Background color
         self.screen.fill(self.settings.background_color)
+
+        # Player and weapon on the screen
         self.player.drawme()
         self.weapon.drawme()
+
+        # Flips/Update de screen
         pygame.display.flip()
 
     def _check_events(self):

@@ -6,6 +6,7 @@ class Player:
     """Class that creates and manages the player"""
 
     def __init__(self, st_game):
+        """All the needed variables"""
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
@@ -25,9 +26,11 @@ class Player:
 
     def update(self):
 
+        # Set the vectors to zero
         x_vector = 0
         y_vector = 0
 
+        # Adds or subtract one to the vector
         if self.moving_down:
             y_vector += 1
         if self.moving_up:
@@ -37,6 +40,7 @@ class Player:
         if self.moving_left:
             x_vector -= 1
 
+        # Normalize the vector and adds it to the players position
         if x_vector != 0 or y_vector != 0:
             mag = math.sqrt(x_vector**2 + y_vector**2)
 
