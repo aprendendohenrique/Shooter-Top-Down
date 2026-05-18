@@ -44,4 +44,6 @@ class Weapon:
 
     def drawme(self):
         pygame.draw.rect(self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height))
+        # Draw a line from the player to the mouse
+        pygame.draw.line(self.screen, "red", self.player.rect.center, pygame.mouse.get_pos(), 3)
         self.screen.blit(self.rotated_surface, self.rotated_rect)
