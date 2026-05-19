@@ -23,6 +23,8 @@ class ShooterTopdown:
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
 
+        self.font = pygame.font.SysFont(None, 48)
+
     def run_game(self):
         while True:
             # Check key events
@@ -31,6 +33,9 @@ class ShooterTopdown:
             # Player update
             self.player.update()
             self.weapon.update()
+
+            # Text on the screen
+            self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
 
             # Update everything to the screen
             self._update_screen()
@@ -45,6 +50,9 @@ class ShooterTopdown:
         # Player and weapon on the screen
         self.player.drawme()
         self.weapon.drawme()
+
+        # Text
+        self.screen.blit(self.text_surface, (0, 465))
 
         # Flips/Update de screen
         pygame.display.flip()

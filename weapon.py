@@ -19,13 +19,9 @@ class Weapon:
         self.weapon_height = 12
         self.distance = 40
 
-        self.rect = pygame.Rect(0, 0, self.weapon_width, self.weapon_height)
-
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
 
     def update(self):
-        self.rect.center = self.player.rect.center
-
         # Get mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
