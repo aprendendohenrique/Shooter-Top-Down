@@ -1,7 +1,6 @@
 import math
 
 import pygame
-from numpy.ma.core import angle
 
 
 class Weapon:
@@ -28,12 +27,12 @@ class Weapon:
         dx = mouse_x - self.player.rect.centerx
         dy = mouse_y - self.player.rect.centery
 
-        angle = math.atan2(dy, dx)
+        self.angle = math.atan2(dy, dx)
 
-        weapon_x = self.player.rect.centerx + math.cos(angle) * self.distance
-        weapon_y = self.player.rect.centery + math.sin(angle) * self.distance
+        weapon_x = self.player.rect.centerx + math.cos(self.angle) * self.distance
+        weapon_y = self.player.rect.centery + math.sin(self.angle) * self.distance
 
-        angle = math.degrees(angle)
+        angle = math.degrees(self.angle)
 
         self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
         self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))

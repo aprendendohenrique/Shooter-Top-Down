@@ -5,6 +5,7 @@ import pygame
 from settings import Settings
 from player import Player
 from weapon import Weapon
+from bullet import Bullet
 
 
 class ShooterTopdown:
@@ -22,7 +23,9 @@ class ShooterTopdown:
         # Objects
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
+        self.bullet = Bullet(self)
 
+        # Font the mouse position text
         self.font = pygame.font.SysFont(None, 48)
 
     def run_game(self):
@@ -33,8 +36,9 @@ class ShooterTopdown:
             # Player update
             self.player.update()
             self.weapon.update()
+            self.bullet.update()
 
-            # Text on the screen
+            # Text of the mouse position
             self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
 
             # Update everything to the screen
@@ -50,8 +54,9 @@ class ShooterTopdown:
         # Player and weapon on the screen
         self.player.drawme()
         self.weapon.drawme()
+        self.bullet.drawme()
 
-        # Text
+        # Text of the mouse position
         self.screen.blit(self.text_surface, (0, 465))
 
         # Flips/Update de screen
