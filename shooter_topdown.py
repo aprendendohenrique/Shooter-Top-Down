@@ -23,7 +23,7 @@ class ShooterTopdown:
         # Objects
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
-        self.bullet = Bullet(self)
+        self.bullets = pygame.sprite.Group()
 
         # Font the mouse position text
         self.font = pygame.font.SysFont(None, 48)
@@ -36,7 +36,7 @@ class ShooterTopdown:
             # Player update
             self.player.update()
             self.weapon.update()
-            self.bullet.update()
+            self.bullets.update()
 
             # Text of the mouse position
             self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
@@ -54,7 +54,8 @@ class ShooterTopdown:
         # Player and weapon on the screen
         self.player.drawme()
         self.weapon.drawme()
-        self.bullet.drawme()
+        for bullet in self.bullets:
+            bullet.drawme()
 
         # Text of the mouse position
         self.screen.blit(self.text_surface, (0, 465))
@@ -70,6 +71,9 @@ class ShooterTopdown:
                 self._key_down_event(event)
             elif event.type == pygame.KEYUP:
                 self._key_up_event(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                bullet = Bullet(self)
+                self.bullets.add(bullet)
 
     def _key_down_event(self, event):
         if event.key == pygame.K_q:

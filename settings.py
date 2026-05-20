@@ -12,3 +12,4 @@ class Settings:
 
         # Player Settings
         self.player_speed = 8
+        self.bullet_speed = 10

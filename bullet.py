@@ -9,11 +9,8 @@ class Bullet(Sprite):
 
     def __init__(self,st_game):
         super().__init__()
-        self.setting = st_game.settings
+        self.settings = st_game.settings
         self.screen = st_game.screen
-        self.screen_rect = st_game.screen_rect
-        self.weapon = st_game.weapon
-        self.player = st_game.player
 
         self.bullet_color = "black"
         self.bullet_radius = 10
@@ -22,10 +19,15 @@ class Bullet(Sprite):
         self.surface = pygame.Surface((self.bullet_radius*2, self.bullet_radius*2), pygame.SRCALPHA)
         self.surface_rect = self.surface.get_rect()
 
+        self.angle = math.cos(st_game.weapon.angle)
+        self.centerx = st_game.player.rect.centerx
+        self.centery = st_game.player.rect.centery
+
     def update(self):
-        bullet_x = self.player.rect.centerx + math.cos(self.weapon.angle) * self.bullet_distance
-        bullet_y = self.player.rect.centery + math.sin(self.weapon.angle) * self.bullet_distance
+        bullet_x = self.centerx + self.angle * self.bullet_distance
+        bullet_y = self.centery + self.angle * self.bullet_distance
         self.surface_rect.center = (bullet_x, bullet_y)
+        self.bullet_distance += self.settings.bullet_speed
 
     def drawme(self):
         pygame.draw.circle(self.surface, self.bullet_color,
