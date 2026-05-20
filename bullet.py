@@ -19,13 +19,14 @@ class Bullet(Sprite):
         self.surface = pygame.Surface((self.bullet_radius*2, self.bullet_radius*2), pygame.SRCALPHA)
         self.surface_rect = self.surface.get_rect()
 
-        self.angle = math.cos(st_game.weapon.angle)
+        self.cos_angle = math.cos(st_game.weapon.angle)
+        self.sin_angle = math.sin(st_game.weapon.angle)
         self.centerx = st_game.player.rect.centerx
         self.centery = st_game.player.rect.centery
 
     def update(self):
-        bullet_x = self.centerx + self.angle * self.bullet_distance
-        bullet_y = self.centery + self.angle * self.bullet_distance
+        bullet_x = self.centerx + self.cos_angle * self.bullet_distance
+        bullet_y = self.centery + self.sin_angle * self.bullet_distance
         self.surface_rect.center = (bullet_x, bullet_y)
         self.bullet_distance += self.settings.bullet_speed
 
