@@ -25,6 +25,10 @@ class ShooterTopdown:
         self.weapon = Weapon(self, self.player)
         self.bullets = pygame.sprite.Group()
 
+        # Shoot
+        self.last_time_shot = pygame.time.get_ticks()
+        self.is_shooting = False
+
         # Font the mouse position text
         self.font = pygame.font.SysFont(None, 48)
 
@@ -32,6 +36,7 @@ class ShooterTopdown:
         while True:
             # Check key events
             self._check_events()
+            self._shoot()
 
             # Player update
             self.player.update()
@@ -72,8 +77,9 @@ class ShooterTopdown:
             elif event.type == pygame.KEYUP:
                 self._key_up_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                bullet = Bullet(self)
-                self.bullets.add(bullet)
+                self.is_shooting = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.is_shooting = False
 
     def _key_down_event(self, event):
         if event.key == pygame.K_q:
@@ -96,6 +102,13 @@ class ShooterTopdown:
             self.player.moving_right = False
         elif event.key == pygame.K_a:
             self.player.moving_left = False
+
+    def _shoot(self):
+        if self.is_shooting:
+            if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
+                bullet = Bullet(self)
+                self.bullets.add(bullet)
+                self.last_time_shot = pygame.time.get_ticks()
 
 st_game = ShooterTopdown()
 st_game.run_game()

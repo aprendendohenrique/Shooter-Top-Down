@@ -15,6 +15,7 @@ class Bullet(Sprite):
         self.bullet_color = "black"
         self.bullet_radius = 10
         self.bullet_distance = 80
+        self.spawn_time = pygame.time.get_ticks()
 
         self.surface = pygame.Surface((self.bullet_radius*2, self.bullet_radius*2), pygame.SRCALPHA)
         self.surface_rect = self.surface.get_rect()
@@ -29,6 +30,10 @@ class Bullet(Sprite):
         bullet_y = self.centery + self.sin_angle * self.bullet_distance
         self.surface_rect.center = (bullet_x, bullet_y)
         self.bullet_distance += self.settings.bullet_speed
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.spawn_time > self.settings.bullet_despawn_time:
+            self.kill()
 
     def drawme(self):
         pygame.draw.circle(self.surface, self.bullet_color,
