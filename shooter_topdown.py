@@ -6,6 +6,7 @@ from settings import Settings
 from player import Player
 from weapon import Weapon
 from bullet import Bullet
+from enemy import Enemy
 
 
 class ShooterTopdown:
@@ -24,6 +25,7 @@ class ShooterTopdown:
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
         self.bullets = pygame.sprite.Group()
+        self.enemy = Enemy(self)
 
         # Shoot
         self.last_time_shot = pygame.time.get_ticks()
@@ -42,6 +44,7 @@ class ShooterTopdown:
             self.player.update()
             self.weapon.update()
             self.bullets.update()
+            self.enemy.update()
 
             # Text of the mouse position
             self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
@@ -61,6 +64,7 @@ class ShooterTopdown:
         self.weapon.drawme()
         for bullet in self.bullets:
             bullet.drawme()
+        self.enemy.drawme()
 
         # Text of the mouse position
         self.screen.blit(self.text_surface, (0, 465))
