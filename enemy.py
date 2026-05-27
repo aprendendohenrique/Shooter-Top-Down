@@ -29,8 +29,9 @@ class Enemy(Sprite):
 
         angle = math.atan2(distance_y, distance_x)
 
-        self.x_rect += math.cos(angle) * self.settings.enemy_speed
-        self.y_rect += math.sin(angle) * self.settings.enemy_speed
+        if not self.rect.colliderect(self.player.rect):
+            self.x_rect += math.cos(angle) * self.settings.enemy_speed
+            self.y_rect += math.sin(angle) * self.settings.enemy_speed
 
         self.rect.x = self.x_rect
         self.rect.y = self.y_rect
