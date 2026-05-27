@@ -1,4 +1,5 @@
 import math
+from math import atan2
 
 import pygame
 from pygame.sprite import Sprite
@@ -22,33 +23,17 @@ class Enemy(Sprite):
         self.y_rect = float(self.rect.y)
 
     def update(self):
-        x_vector = 0
-        y_vector = 0
 
         distance_x = self.player.rect.centerx - self.rect.centerx
         distance_y = self.player.rect.centery - self.rect.centery
 
-        if distance_x > 0:
-            x_vector += 1
-        elif distance_x < 0:
-            x_vector -= 1
-        if distance_y > 0:
-            y_vector += 1
-        elif distance_y < 0:
-            y_vector -= 1
+        angle = math.atan2(distance_y, distance_x)
 
-        if x_vector != 0 or y_vector != 0:
-            mag = math.sqrt(x_vector**2 + y_vector**2)
-
-            x_vector /= mag
-            y_vector /= mag
-
-            self.x_rect += x_vector * self.settings.enemy_speed
-            self.y_rect += y_vector * self.settings.enemy_speed
+        self.x_rect += math.cos(angle) * self.settings.enemy_speed
+        self.y_rect += math.sin(angle) * self.settings.enemy_speed
 
         self.rect.x = self.x_rect
         self.rect.y = self.y_rect
-        print(self.rect)
 
     def drawme(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
