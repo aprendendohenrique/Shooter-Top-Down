@@ -55,3 +55,6 @@ class Player:
 
     def drawme(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
+
+    def get_hit(self, damage):
+        self.settings.player_health -= damage
