@@ -1,6 +1,8 @@
 import math
 
 import pygame
+from pandas.io.sas.sas_constants import subheader_pointer_length_x64
+
 
 class Player:
     """Class that creates and manages the player"""
@@ -12,6 +14,13 @@ class Player:
         self.settings = st_game.settings
 
         self.color = 255, 255, 255
+
+        # Hit animation stuff
+        self.hit_color = (255, 0, 0)
+        self.current_color = self.color
+        self.got_hit = False
+        self.got_hit_time = pygame.time.get_ticks()
+        self.hit_animation_time = 100
 
         self.rect = pygame.Rect(0, 0, 50, 50)
         self.rect.center = self.screen_rect.center
@@ -53,8 +62,15 @@ class Player:
         self.rect.x = self.x
         self.rect.y = self.y
 
+        if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
+            self.got_hit = False
+            self.current_color = self.color
+
     def drawme(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
+        pygame.draw.rect(self.screen, self.current_color, self.rect)
 
     def get_hit(self, damage):
         self.settings.player_health -= damage
+        self.current_color = self.hit_color
+        self.got_hit = True
+        self.got_hit_time = pygame.time.get_ticks()
