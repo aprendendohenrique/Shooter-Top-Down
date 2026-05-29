@@ -16,6 +16,7 @@ class Enemy(Sprite):
         self.player = st_game.player
 
         self.color = (255, 0, 0)
+        self.health = 2
         self.damage = 1
 
         # 1000 = 1 second
@@ -48,3 +49,7 @@ class Enemy(Sprite):
 
     def drawme(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
+
+    def get_hit(self, damage):
+        self.health -= damage
+        print(self.health)

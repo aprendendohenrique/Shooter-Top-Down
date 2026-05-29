@@ -1,3 +1,6 @@
+from time import sleep
+
+
 class Settings:
     """File that stores configurable information of the game"""
 
@@ -12,6 +15,7 @@ class Settings:
 
         """Player Settings"""
         self.player_health = 5
+        self.player_damage = 1
         self.player_speed = 8
         self.bullet_speed = 10
 

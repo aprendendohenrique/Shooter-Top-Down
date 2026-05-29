@@ -25,7 +25,9 @@ class ShooterTopdown:
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
         self.bullets = pygame.sprite.Group()
-        self.enemy = Enemy(self)
+        self.enemys = pygame.sprite.Group()
+        enemy = Enemy(self)
+        self.enemys.add(enemy)
 
         # Shoot
         self.last_time_shot = pygame.time.get_ticks()
@@ -44,7 +46,7 @@ class ShooterTopdown:
             self.player.update()
             self.weapon.update()
             self.bullets.update()
-            self.enemy.update()
+            self.enemys.update()
 
             # Text of the mouse position
             self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
@@ -64,7 +66,8 @@ class ShooterTopdown:
         self.weapon.drawme()
         for bullet in self.bullets:
             bullet.drawme()
-        self.enemy.drawme()
+        for enemy in self.enemys:
+            enemy.drawme()
 
         # Text of the mouse position
         self.screen.blit(self.text_surface, (0, 465))
@@ -113,6 +116,14 @@ class ShooterTopdown:
                 bullet = Bullet(self)
                 self.bullets.add(bullet)
                 self.last_time_shot = pygame.time.get_ticks()
+
+        # Checking collisions between bullets and enemys
+        collisions = pygame.sprite.groupcollide(self.bullets, self.enemys, True, False)
+        for bullet, enemies_hit in collisions.items():
+            for enemy in enemies_hit:
+                enemy.get_hit(self.settings.player_damage)
+                if enemy.health <= 0:
+                    enemy.kill()
 
 st_game = ShooterTopdown()
 st_game.run_game()
