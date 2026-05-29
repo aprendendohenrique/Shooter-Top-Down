@@ -23,6 +23,12 @@ class Enemy(Sprite):
         self.enemy_attack_speed = 1000
         self.last_hit = pygame.time.get_ticks()
 
+        # Hit animation stuff
+        self.hit_color = (255, 255, 255)
+        self.current_color = self.color
+        self.got_hit = False
+        self.got_hit_time = pygame.time.get_ticks()
+        self.hit_animation_time = 100
 
         self.rect = pygame.Rect(0, 0, 50, 50)
         self.rect.midleft = self.screen_rect.midleft
@@ -47,9 +53,15 @@ class Enemy(Sprite):
         self.rect.x = self.x_rect
         self.rect.y = self.y_rect
 
+        if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
+            self.got_hit = False
+            self.current_color = self.color
+
     def drawme(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
+        pygame.draw.rect(self.screen, self.current_color, self.rect)
 
     def get_hit(self, damage):
         self.health -= damage
-        print(self.health)
+        self.current_color = self.hit_color
+        self.got_hit = True
+        self.got_hit_time = pygame.time.get_ticks()
