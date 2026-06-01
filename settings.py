@@ -23,6 +23,3 @@ class Settings:
         self.bullet_despawn_time = 3000
         self.firerate = 500
 
-        """Enemy Settings"""
-        self.enemy_speed = 2
-

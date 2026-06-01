@@ -6,7 +6,8 @@ from settings import Settings
 from player import Player
 from weapon import Weapon
 from bullet import Bullet
-from enemy import Enemy
+from Enemies.walker import Walker
+from Enemies.runner import Runner
 
 
 class ShooterTopdown:
@@ -25,9 +26,11 @@ class ShooterTopdown:
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
         self.bullets = pygame.sprite.Group()
-        self.enemys = pygame.sprite.Group()
-        enemy = Enemy(self)
-        self.enemys.add(enemy)
+        self.enemies = pygame.sprite.Group()
+        walker = Walker(self, 50, 150)
+        runner = Runner(self, 840, 150)
+        self.enemies.add(walker)
+        self.enemies.add(runner)
 
         # Shoot
         self.last_time_shot = pygame.time.get_ticks()
@@ -46,7 +49,7 @@ class ShooterTopdown:
             self.player.update()
             self.weapon.update()
             self.bullets.update()
-            self.enemys.update()
+            self.enemies.update()
 
             # Text of the mouse position
             self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
@@ -66,7 +69,7 @@ class ShooterTopdown:
         self.weapon.drawme()
         for bullet in self.bullets:
             bullet.drawme()
-        for enemy in self.enemys:
+        for enemy in self.enemies:
             enemy.drawme()
 
         # Text of the mouse position
@@ -118,7 +121,7 @@ class ShooterTopdown:
                 self.last_time_shot = pygame.time.get_ticks()
 
         # Checking collisions between bullets and enemys
-        collisions = pygame.sprite.groupcollide(self.bullets, self.enemys, True, False)
+        collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
         for bullet, enemies_hit in collisions.items():
             for enemy in enemies_hit:
                 enemy.get_hit(self.settings.player_damage)
