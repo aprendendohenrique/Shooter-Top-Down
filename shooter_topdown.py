@@ -121,7 +121,7 @@ class ShooterTopdown:
                 self.last_time_shot = pygame.time.get_ticks()
 
         # Checking collisions between bullets and enemys
-        collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
+        collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False, pygame.sprite.collide_circle)
         for bullet, enemies_hit in collisions.items():
             for enemy in enemies_hit:
                 enemy.get_hit(self.settings.player_damage)

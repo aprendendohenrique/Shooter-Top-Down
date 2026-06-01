@@ -14,6 +14,7 @@ class Enemy(Sprite):
         self.health = 4
         self.damage = 1
         self.speed = 2
+        self.vision_range = 500
 
         # 1000 = 1 second
         self.enemy_attack_speed = 1000
