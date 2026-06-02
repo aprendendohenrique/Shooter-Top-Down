@@ -3,6 +3,7 @@ import math
 import pygame
 
 from Enemies.enemy import Enemy
+from bullet import Bullet
 
 
 class Shooter(Enemy):
@@ -10,11 +11,17 @@ class Shooter(Enemy):
 
     def __init__(self, st_game, x, y):
         super().__init__(st_game, x, y)
+        self.st_game = st_game
         self.color = (150, 0, 255)
         self.current_color = self.color
         self.health = 3
 
+        self.vision_range = 700
+        self.attack_range = 500
+
         # Weapon variables
+        self.last_time_shot = pygame.time.get_ticks()
+        self.firerate = 3000
         self.weapon_color = (255, 255, 255)
         self.weapon_width = 55
         self.weapon_height = 12
@@ -41,6 +48,9 @@ class Shooter(Enemy):
                 self.last_hit = pygame.time.get_ticks()
                 self.player.get_hit(self.damage)
 
+            self.rect.x = self.x_rect
+            self.rect.y = self.y_rect
+
             # weapon
             weapon_x = self.rect.centerx + math.cos(self.angle) * self.weapon_distance
             weapon_y = self.rect.centery + math.sin(self.angle) * self.weapon_distance
@@ -50,8 +60,12 @@ class Shooter(Enemy):
             self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
             self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
 
-            self.rect.x = self.x_rect
-            self.rect.y = self.y_rect
+            if distance < self.attack_range + self.player.rect.width:
+                if pygame.time.get_ticks() - self.last_time_shot >= self.firerate:
+                    bullet = Bullet(self.st_game, self, self.angle, self.damage)
+                    self.st_game.bullets.add(bullet)
+                    self.last_time_shot = pygame.time.get_ticks()
+
 
         if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
             self.got_hit = False

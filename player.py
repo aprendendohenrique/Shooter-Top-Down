@@ -1,14 +1,15 @@
 import math
 
 import pygame
-from pandas.io.sas.sas_constants import subheader_pointer_length_x64
+from pygame.sprite import Sprite
 
 
-class Player:
+class Player(Sprite):
     """Class that creates and manages the player"""
 
     def __init__(self, st_game):
         """All the needed variables"""
+        super().__init__()
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings

@@ -7,12 +7,13 @@ import pygame
 class Bullet(Sprite):
     """Class that creates and takes care of bullets"""
 
-    def __init__(self,st_game):
+    def __init__(self, st_game, shooter, angle, damage):
         super().__init__()
         self.settings = st_game.settings
         self.screen = st_game.screen
 
         self.bullet_color = "black"
+        self.bullet_damage = damage
         self.bullet_radius = 10
         self.bullet_distance = 80
         self.spawn_time = pygame.time.get_ticks()
@@ -20,10 +21,10 @@ class Bullet(Sprite):
         self.surface = pygame.Surface((self.bullet_radius*2, self.bullet_radius*2), pygame.SRCALPHA)
         self.rect = self.surface.get_rect()
 
-        self.cos_angle = math.cos(st_game.weapon.angle)
-        self.sin_angle = math.sin(st_game.weapon.angle)
-        self.centerx = st_game.player.rect.centerx
-        self.centery = st_game.player.rect.centery
+        self.cos_angle = math.cos(angle)
+        self.sin_angle = math.sin(angle)
+        self.centerx = shooter.rect.centerx
+        self.centery = shooter.rect.centery
 
     def update(self):
         bullet_x = self.centerx + self.cos_angle * self.bullet_distance

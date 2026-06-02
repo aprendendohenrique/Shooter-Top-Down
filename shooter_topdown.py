@@ -119,17 +119,20 @@ class ShooterTopdown:
     def _shoot(self):
         if self.is_shooting:
             if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
-                bullet = Bullet(self)
+                bullet = Bullet(self, self.player, self.weapon.angle, self.settings.player_damage)
                 self.bullets.add(bullet)
                 self.last_time_shot = pygame.time.get_ticks()
 
         # Checking collisions between bullets and enemys
-        collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False, pygame.sprite.collide_circle)
-        for bullet, enemies_hit in collisions.items():
+        enemy_collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False, pygame.sprite.collide_circle)
+        for bullet, enemies_hit in enemy_collisions.items():
             for enemy in enemies_hit:
-                enemy.get_hit(self.settings.player_damage)
+                enemy.get_hit(bullet.bullet_damage)
                 if enemy.health <= 0:
                     enemy.kill()
+        player_collisions = pygame.sprite.spritecollide(self.player, self.bullets, True)
+        for bullet in player_collisions:
+            self.player.get_hit(bullet.bullet_damage)
 
 st_game = ShooterTopdown()
 st_game.run_game()
