@@ -8,6 +8,7 @@ from weapon import Weapon
 from bullet import Bullet
 from Enemies.walker import Walker
 from Enemies.runner import Runner
+from Enemies.shooter import Shooter
 
 
 class ShooterTopdown:
@@ -27,10 +28,12 @@ class ShooterTopdown:
         self.weapon = Weapon(self, self.player)
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
-        walker = Walker(self, 50, 150)
-        runner = Runner(self, 840, 150)
-        self.enemies.add(walker)
-        self.enemies.add(runner)
+        # walker = Walker(self, 50, 150)
+        # runner = Runner(self, 840, 150)
+        shooter = Shooter(self, 0, self.screen_rect.centery)
+        # self.enemies.add(walker)
+        # self.enemies.add(runner)
+        self.enemies.add(shooter)
 
         # Shoot
         self.last_time_shot = pygame.time.get_ticks()
