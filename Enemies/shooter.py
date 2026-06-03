@@ -1,6 +1,7 @@
 import math
 
 import pygame
+from numpy.ma.core import angle
 
 from Enemies.enemy import Enemy
 from bullet import Bullet
@@ -17,7 +18,10 @@ class Shooter(Enemy):
         self.health = 3
 
         self.vision_range = 700
-        self.attack_range = 500
+        self.attack_range = 450
+        self.current_angle = 0
+        self.weapon_rotation_speed = 0.02
+        self.weapon_rotation_offset = self.weapon_rotation_speed / 2
 
         # Weapon variables
         self.last_time_shot = pygame.time.get_ticks()
@@ -38,33 +42,43 @@ class Shooter(Enemy):
 
         if distance < self.vision_range + self.player.rect.width:
 
-            # movement
+            # weapon
             self.angle = math.atan2(distance_y, distance_x)
 
-            if not self.rect.colliderect(self.player.rect):
-                self.x_rect += math.cos(self.angle) * self.speed
-                self.y_rect += math.sin(self.angle) * self.speed
-            elif pygame.time.get_ticks() - self.last_hit >= self.enemy_attack_speed:
-                self.last_hit = pygame.time.get_ticks()
-                self.player.get_hit(self.damage)
+            if (self.current_angle == 0 or
+                    self.angle - self.weapon_rotation_offset < self.current_angle < self.angle + self.weapon_rotation_offset):
+                self.current_angle = self.angle
+            elif self.current_angle < self.angle:
+                self.current_angle += self.weapon_rotation_speed
+            elif self.current_angle > self.angle:
+                self.current_angle -= self.weapon_rotation_speed
 
-            self.rect.x = self.x_rect
-            self.rect.y = self.y_rect
+            weapon_x = self.rect.centerx + math.cos(self.current_angle) * self.weapon_distance
+            weapon_y = self.rect.centery + math.sin(self.current_angle) * self.weapon_distance
 
-            # weapon
-            weapon_x = self.rect.centerx + math.cos(self.angle) * self.weapon_distance
-            weapon_y = self.rect.centery + math.sin(self.angle) * self.weapon_distance
+            current_angle = math.degrees(self.current_angle)
 
-            angle = math.degrees(self.angle)
-
-            self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
+            self.rotated_surface = pygame.transform.rotate(self.gun_surface, -current_angle)
             self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
 
             if distance < self.attack_range + self.player.rect.width:
                 if pygame.time.get_ticks() - self.last_time_shot >= self.firerate:
-                    bullet = Bullet(self.st_game, self, self.angle, self.damage)
+                    bullet = Bullet(self.st_game, self, self.current_angle, self.damage, 7,"red")
                     self.st_game.bullets.add(bullet)
                     self.last_time_shot = pygame.time.get_ticks()
+            else:
+                self.last_time_shot = pygame.time.get_ticks()
+
+                # movement
+                if not self.rect.colliderect(self.player.rect):
+                    self.x_rect += math.cos(self.angle) * self.speed
+                    self.y_rect += math.sin(self.angle) * self.speed
+                elif pygame.time.get_ticks() - self.last_hit >= self.enemy_attack_speed:
+                    self.last_hit = pygame.time.get_ticks()
+                    self.player.get_hit(self.damage)
+
+                self.rect.x = self.x_rect
+                self.rect.y = self.y_rect
 
 
         if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
