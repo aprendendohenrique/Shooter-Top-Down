@@ -8,21 +8,26 @@ class Player(Sprite):
     """Class that creates and manages the player"""
 
     def __init__(self, st_game):
-        """All the needed variables"""
+        """Start the needed variables"""
+
         super().__init__()
+
+        # Base
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
 
+        # Player color
         self.color = 255, 255, 255
 
-        # Hit animation stuff
+        # Hit animation
         self.hit_color = (255, 0, 0)
         self.current_color = self.color
         self.got_hit = False
         self.got_hit_time = pygame.time.get_ticks()
         self.hit_animation_time = 100
 
+        # Rect & Movement
         self.rect = pygame.Rect(0, 0, 50, 50)
         self.rect.center = self.screen_rect.center
 
@@ -35,12 +40,15 @@ class Player(Sprite):
         self.moving_left = False
 
     def update(self):
+        """---Update the player every tick---"""
+
+        """Movement"""
 
         # Set the vectors to zero
         x_vector = 0
         y_vector = 0
 
-        # Adds or subtract one to the vector
+        # Add or subtract one to the vector
         if self.moving_down:
             y_vector += 1
         if self.moving_up:
@@ -63,6 +71,8 @@ class Player(Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
+        """Hit"""
+        # Check if the animation is still going, if not, it runs the animation
         if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
             self.got_hit = False
             self.current_color = self.color

@@ -1,6 +1,3 @@
-from time import sleep
-
-
 class Settings:
     """File that stores configurable information of the game"""
 

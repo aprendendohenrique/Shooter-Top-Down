@@ -6,17 +6,22 @@ from Enemies.enemy import Enemy
 
 
 class Runner(Enemy):
-    """The Second Enemy"""
+    """The Second Enemy, Runner"""
 
     def __init__(self, st_game, x, y):
+        """Start all the needed variables"""
+
         super().__init__(st_game, x ,y)
+
+        # Enemy
         self.color = (255, 0, 255)
         self.current_color = self.color
         self.speed = 4
         self.health = 2
 
     def update(self):
-
+        """Update the enemy every tick"""
+        # Make the enemy move
         distance_x = self.player.rect.centerx - self.rect.centerx
         distance_y = self.player.rect.centery - self.rect.centery
 
@@ -35,6 +40,7 @@ class Runner(Enemy):
             self.rect.x = self.x_rect
             self.rect.y = self.y_rect
 
+        # Hit
         if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
             self.got_hit = False
             self.current_color = self.color

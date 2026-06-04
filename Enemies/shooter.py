@@ -8,22 +8,29 @@ from bullet import Bullet
 
 
 class Shooter(Enemy):
-    """Shooter Enemy"""
+    """The Third Enemy, Shooter"""
 
     def __init__(self, st_game, x, y):
+        """Start all the needed variables"""
+
         super().__init__(st_game, x, y)
+
+        # Base
         self.st_game = st_game
+
+        # Enemy
         self.color = (150, 0, 255)
         self.current_color = self.color
         self.health = 3
-
         self.vision_range = 700
         self.attack_range = 450
+
+        # Weapon position
         self.current_angle = 0
         self.weapon_rotation_speed = 0.02
         self.weapon_rotation_offset = self.weapon_rotation_speed / 2
 
-        # Weapon variables
+        # Weapon
         self.last_time_shot = pygame.time.get_ticks()
         self.firerate = 3000
         self.weapon_color = (255, 255, 255)
@@ -34,7 +41,10 @@ class Shooter(Enemy):
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
 
     def update(self):
+        """---Update the enemy every tick---"""
+        """Make the enemy move, aim and shoot"""
 
+        # Distance between the player and the enemy
         distance_x = self.player.rect.centerx - self.rect.centerx
         distance_y = self.player.rect.centery - self.rect.centery
 
@@ -42,7 +52,7 @@ class Shooter(Enemy):
 
         if distance < self.vision_range + self.player.rect.width:
 
-            # weapon
+            # Weapon aiming
             self.angle = math.atan2(distance_y, distance_x)
 
             if (self.current_angle == 0 or
@@ -61,6 +71,7 @@ class Shooter(Enemy):
             self.rotated_surface = pygame.transform.rotate(self.gun_surface, -current_angle)
             self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
 
+            # Weapon shooting
             if distance < self.attack_range + self.player.rect.width:
                 if pygame.time.get_ticks() - self.last_time_shot >= self.firerate:
                     bullet = Bullet(self.st_game, self, self.current_angle, self.damage, 7,"red")
@@ -69,7 +80,7 @@ class Shooter(Enemy):
             else:
                 self.last_time_shot = pygame.time.get_ticks()
 
-                # movement
+                # Movement
                 if not self.rect.colliderect(self.player.rect):
                     self.x_rect += math.cos(self.angle) * self.speed
                     self.y_rect += math.sin(self.angle) * self.speed

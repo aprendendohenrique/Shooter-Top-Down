@@ -15,9 +15,11 @@ class ShooterTopdown:
     """The main class that control and run the game"""
 
     def __init__(self):
+        """Start the game's variables"""
+
         pygame.init()
 
-        # Main variables
+        # Base
         self.settings = Settings()
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
@@ -39,16 +41,18 @@ class ShooterTopdown:
         self.last_time_shot = pygame.time.get_ticks()
         self.is_shooting = False
 
-        # Font the mouse position text
+        # Font of the mouse position
         self.font = pygame.font.SysFont(None, 48)
 
     def run_game(self):
         while True:
             # Check key events
             self._check_events()
+
+            # Run the player's shooting
             self._shoot()
 
-            # Player update
+            # Objects
             self.player.update()
             self.weapon.update()
             self.bullets.update()
@@ -57,7 +61,7 @@ class ShooterTopdown:
             # Text of the mouse position
             self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
 
-            # Update everything to the screen
+            # Update the screen
             self._update_screen()
 
             # FPS
@@ -67,7 +71,7 @@ class ShooterTopdown:
         # Background color
         self.screen.fill(self.settings.background_color)
 
-        # Player and weapon on the screen
+        # Objects
         self.player.drawme()
         self.weapon.drawme()
         for bullet in self.bullets:
@@ -78,7 +82,7 @@ class ShooterTopdown:
         # Text of the mouse position
         self.screen.blit(self.text_surface, (0, 465))
 
-        # Flips/Update de screen
+        # Flips/Update the screen
         pygame.display.flip()
 
     def _check_events(self):

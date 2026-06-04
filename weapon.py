@@ -7,12 +7,15 @@ class Weapon:
     """The class that create and manages the player's weapon."""
 
     def __init__(self, st_game, player):
-        """All the needed variables"""
+        """Start the needed variables"""
+
+        # Basic
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
         self.player = player
 
+        # Weapon
         self.color = 50, 50, 50
         self.weapon_width = 55
         self.weapon_height = 12
@@ -21,7 +24,9 @@ class Weapon:
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
 
     def update(self):
-        # Get mouse position
+        """Update the enemy every tick"""
+        # Position the weapon around the player
+
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         dx = mouse_x - self.player.rect.centerx
@@ -38,7 +43,11 @@ class Weapon:
         self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
 
     def drawme(self):
+        # Draw a rectangle inside the gun_surface
         pygame.draw.rect(self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height))
+
+        # Blit(put) the rotated_surface(gun_surface but rotated) to the screen
+        self.screen.blit(self.rotated_surface, self.rotated_rect)
+
         # Draw a line from the player to the mouse
         pygame.draw.line(self.screen, "red", self.player.rect.center, pygame.mouse.get_pos(), 3)
-        self.screen.blit(self.rotated_surface, self.rotated_rect)
