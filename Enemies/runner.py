@@ -8,10 +8,10 @@ from Enemies.enemy import Enemy
 class Runner(Enemy):
     """The Second Enemy, Runner"""
 
-    def __init__(self, st_game, x, y):
+    def __init__(self, st_game):
         """Start all the needed variables"""
 
-        super().__init__(st_game, x ,y)
+        super().__init__(st_game)
 
         # Enemy
         self.color = (255, 0, 255)

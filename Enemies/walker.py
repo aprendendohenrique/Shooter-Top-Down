@@ -8,9 +8,9 @@ from Enemies.enemy import Enemy
 class Walker(Enemy):
     """The First Enemy, Walker"""
 
-    def __init__(self, st_game, x, y):
+    def __init__(self, st_game):
         """Start all the needed variables"""
-        super().__init__(st_game, x, y)
+        super().__init__(st_game)
 
     def update(self):
         """Update the enemy every tick"""

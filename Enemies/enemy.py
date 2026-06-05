@@ -5,7 +5,7 @@ from pygame.sprite import Sprite
 class Enemy(Sprite):
     """Main class that manages the simple enemy."""
     
-    def __init__(self, st_game, x, y):
+    def __init__(self, st_game):
         """Start all the needed variables"""
 
         super().__init__()
@@ -33,7 +33,7 @@ class Enemy(Sprite):
         self.hit_animation_time = 100
 
         # Rect
-        self.rect = pygame.Rect(x, y, 50, 50)
+        self.rect = pygame.Rect(0, 0, 50, 50)
 
         self.x_rect = float(self.rect.x)
         self.y_rect = float(self.rect.y)

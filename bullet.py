@@ -7,7 +7,7 @@ import pygame
 class Bullet(Sprite):
     """Class that creates and takes care of bullets"""
 
-    def __init__(self, st_game, shooter, angle, damage, size=10, color="black"):
+    def __init__(self, st_game, shooter, angle, damage, size=10, color="black", is_player=False):
         """Start all the needed variables"""
 
         super().__init__()
@@ -15,6 +15,7 @@ class Bullet(Sprite):
         # Base
         self.settings = st_game.settings
         self.screen = st_game.screen
+        self.is_player = is_player
 
         # Bullet
         self.bullet_color = color
@@ -33,14 +34,17 @@ class Bullet(Sprite):
         self.centerx = shooter.rect.centerx
         self.centery = shooter.rect.centery
 
+        self.bullet_x = self.centerx + self.cos_angle * self.bullet_distance
+        self.bullet_y = self.centery + self.sin_angle * self.bullet_distance
+        self.rect.center = (self.bullet_x, self.bullet_y)
+
     def update(self):
         """Update the bullet every tick"""
         # Position and make the bullet move
 
-        bullet_x = self.centerx + self.cos_angle * self.bullet_distance
-        bullet_y = self.centery + self.sin_angle * self.bullet_distance
-        self.rect.center = (bullet_x, bullet_y)
-        self.bullet_distance += self.settings.bullet_speed
+        self.bullet_x += self.cos_angle * self.settings.bullet_speed
+        self.bullet_y += self.sin_angle * self.settings.bullet_speed
+        self.rect.center = (self.bullet_x, self.bullet_y)
 
         # Despawn the bullet after a certain time
         current_time = pygame.time.get_ticks()
