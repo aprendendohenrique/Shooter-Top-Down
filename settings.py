@@ -11,7 +11,8 @@ class Settings:
         self.background_color = 0, 125, 0
 
         """Player Settings"""
-        self.player_health = 5
+        self.player_max_health = 5
+        self.player_health = self.player_max_health
         self.player_damage = 1
         self.player_speed = 8
         self.bullet_speed = 10

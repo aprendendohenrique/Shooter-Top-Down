@@ -46,3 +46,8 @@ class Enemy(Sprite):
         self.current_color = self.hit_color
         self.got_hit = True
         self.got_hit_time = pygame.time.get_ticks()
+
+    def reposition_me(self, position=(0, 0)):
+        self.rect.center = position
+        self.x_rect = self.rect.x
+        self.y_rect = self.rect.y

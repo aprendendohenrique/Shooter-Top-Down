@@ -26,6 +26,20 @@ class ShooterTopdown:
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
         self.screen_rect = self.screen.get_rect()
 
+        # Game Over
+        self.is_game_over = True
+        self.game_over_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
+        self.game_over_surface.fill("white")
+        self.game_over_surface.set_alpha(150)
+        self.play_button_surface = pygame.Surface((200, 50))
+        self.play_button_surface.fill((10, 80, 0))
+        self.play_button_rect = self.play_button_surface.get_rect()
+        self.play_button_rect.center = self.game_over_surface.get_rect().center
+        self.play_font = pygame.font.SysFont(None, 48)
+        self.play_text = self.play_font.render("Play", True, "white")
+        self.play_text_rect = self.play_text.get_rect()
+        self.play_text_rect.center = self.play_button_rect.center
+
         # Objects
         self.player = Player(self)
         self.weapon = Weapon(self, self.player)
@@ -54,17 +68,19 @@ class ShooterTopdown:
             # Check key events
             self._check_events()
 
-            # Run the player's shooting
-            self._shoot()
+            if not self.is_game_over:
 
-            # Objects
-            self.player.update()
-            self.weapon.update()
-            self.bullets.update()
-            self.enemies.update()
+                # Objects
+                self.player.update()
+                self.weapon.update()
+                self.bullets.update()
+                self.enemies.update()
 
-            # Text of the mouse position
-            self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
+                # Run the player's shooting
+                self._shoot()
+
+                # Mouse position Text
+                self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
 
             # Update the screen
             self._update_screen()
@@ -76,16 +92,22 @@ class ShooterTopdown:
         # Background color
         self.screen.fill(self.settings.background_color)
 
-        # Objects
-        self.player.drawme()
-        self.weapon.drawme()
-        for bullet in self.bullets:
-            bullet.drawme()
-        for enemy in self.enemies:
-            enemy.drawme()
+        if not self.is_game_over:
+            # Objects
+            self.player.drawme()
+            self.weapon.drawme()
+            for bullet in self.bullets:
+                bullet.drawme()
+            for enemy in self.enemies:
+                enemy.drawme()
 
-        # Text of the mouse position
-        self.screen.blit(self.text_surface, (0, 465))
+            # Text of the mouse position
+            self.screen.blit(self.text_surface, (0, 465))
+        else:
+            # Game Over Screen
+            self.screen.blit(self.game_over_surface, (0, 0))
+            self.screen.blit(self.play_button_surface, self.play_button_rect)
+            self.screen.blit(self.play_text, self.play_text_rect)
 
         # Flips/Update the screen
         pygame.display.flip()
@@ -100,6 +122,10 @@ class ShooterTopdown:
                 self._key_up_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.is_shooting = True
+
+                # Game Over
+                if self.is_game_over and self.play_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.is_game_over = False
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.is_shooting = False
 
@@ -154,14 +180,23 @@ class ShooterTopdown:
         for _ in range(self.enemies_to_spawn):
             enemy_class = random.choice(self.enemies_classes)
             enemy = enemy_class(self)
-            enemy.rect.x = random.choice(self.x_spawn_positions)
-            enemy.rect.y = random.randint(0, self.screen_rect.height)
-            enemy.x_rect = enemy.rect.x
-            enemy.y_rect = enemy.rect.y
+            x = random.choice(self.x_spawn_positions)
+            y = random.randint(0, self.screen_rect.height)
+            enemy.reposition_me((x, y))
             self.enemies.add(enemy)
         self.enemies_spawned = len(self.enemies)
         if self.enemies_to_spawn < self.max_enemies:
             self.enemies_to_spawn += 1
+
+    def game_over(self):
+        self.is_game_over = True
+        self.enemies.empty()
+        self.bullets.empty()
+        self.settings.player_health = self.settings.player_max_health
+        self.player.reposition_me(self.screen_rect.center)
+        self.enemies_to_spawn = 1
+        self.enemies_spawned = 0
+        self._spawn()
 
 
 

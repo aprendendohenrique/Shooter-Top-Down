@@ -13,6 +13,7 @@ class Player(Sprite):
         super().__init__()
 
         # Base
+        self.st_game = st_game
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
@@ -85,3 +86,10 @@ class Player(Sprite):
         self.current_color = self.hit_color
         self.got_hit = True
         self.got_hit_time = pygame.time.get_ticks()
+        if self.settings.player_health <= 0:
+            self.st_game.game_over()
+
+    def reposition_me(self, position=(0, 0)):
+        self.rect.center = position
+        self.x = self.rect.x
+        self.y = self.rect.y
