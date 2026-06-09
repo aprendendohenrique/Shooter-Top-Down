@@ -140,6 +140,8 @@ class ShooterTopdown:
             self.player.moving_right = True
         elif event.key == pygame.K_a:
             self.player.moving_left = True
+        elif event.key == pygame.K_SPACE:
+            self.player.dashing = True
 
     def _key_up_event(self, event):
         if event.key == pygame.K_s:

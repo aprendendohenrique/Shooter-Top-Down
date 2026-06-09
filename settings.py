@@ -21,3 +21,7 @@ class Settings:
         self.bullet_despawn_time = 3000
         self.firerate = 500
 
+        self.dash_duration = 100
+        self.dash_cooldown = 200 + self.dash_duration
+        self.dash_speed = 20
+

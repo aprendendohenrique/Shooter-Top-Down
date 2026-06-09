@@ -17,6 +17,7 @@ class Player(Sprite):
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
+        self.tick = pygame.time.get_ticks()
 
         # Player color
         self.color = 255, 255, 255
@@ -25,7 +26,7 @@ class Player(Sprite):
         self.hit_color = (255, 0, 0)
         self.current_color = self.color
         self.got_hit = False
-        self.got_hit_time = pygame.time.get_ticks()
+        self.got_hit_time = self.tick
         self.hit_animation_time = 100
 
         # Rect & Movement
@@ -40,8 +41,17 @@ class Player(Sprite):
         self.moving_right = False
         self.moving_left = False
 
+        # Dash
+        self.dashing = False
+        self.can_dash = False
+        self.last_time_dashed = self.tick
+        self.last_x_vector = 0
+        self.last_y_vector = 0
+
     def update(self):
         """---Update the player every tick---"""
+
+        self.tick = pygame.time.get_ticks()
 
         """Movement"""
 
@@ -49,32 +59,55 @@ class Player(Sprite):
         x_vector = 0
         y_vector = 0
 
-        # Add or subtract one to the vector
-        if self.moving_down:
-            y_vector += 1
-        if self.moving_up:
-            y_vector -= 1
-        if self.moving_right:
-            x_vector += 1
-        if self.moving_left:
-            x_vector -= 1
+        if self.dashing and self.tick - self.last_time_dashed >= self.settings.dash_cooldown:
+            self.last_time_dashed = self.tick
+            self.can_dash = True
 
-        # Normalize the vector and adds it to the players position
-        if x_vector != 0 or y_vector != 0:
-            mag = math.sqrt(x_vector**2 + y_vector**2)
+        if not self.can_dash:
+            # Add or subtract one to the vector
+            if self.moving_down:
+                y_vector += 1
+            if self.moving_up:
+                y_vector -= 1
+            if self.moving_right:
+                x_vector += 1
+            if self.moving_left:
+                x_vector -= 1
 
-            y_vector /= mag
-            x_vector /= mag
+            self.last_x_vector = x_vector
+            self.last_y_vector = y_vector
 
-            self.y += y_vector * self.settings.player_speed
-            self.x += x_vector * self.settings.player_speed
+            if x_vector != 0 or y_vector != 0:
+
+                # Normalize the vector and adds it to the players position
+                mag = math.sqrt(x_vector**2 + y_vector**2)
+
+                y_vector /= mag
+                x_vector /= mag
+
+                self.y += y_vector * self.settings.player_speed
+                self.x += x_vector * self.settings.player_speed
+
+        elif (self.last_x_vector != 0 or self.last_y_vector != 0) and self.tick - self.last_time_dashed < self.settings.dash_duration:
+
+            # Normalize the vector and adds it to the players position
+            mag = math.sqrt(self.last_x_vector ** 2 + self.last_y_vector ** 2)
+
+            self.last_y_vector /= mag
+            self.last_x_vector /= mag
+
+            self.y += self.last_y_vector * self.settings.dash_speed
+            self.x += self.last_x_vector * self.settings.dash_speed
+        else:
+            self.can_dash = False
+            self.dashing = False
 
         self.rect.x = self.x
         self.rect.y = self.y
 
         """Hit"""
         # Check if the animation is still going, if not, it runs the animation
-        if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
+        if self.got_hit and self.tick - self.got_hit_time >= self.hit_animation_time:
             self.got_hit = False
             self.current_color = self.color
 
