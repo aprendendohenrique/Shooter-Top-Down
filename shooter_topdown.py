@@ -121,13 +121,13 @@ class ShooterTopdown:
             elif event.type == pygame.KEYUP:
                 self._key_up_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.is_shooting = True
+                self.weapon.is_shooting = True
 
                 # Game Over
                 if self.is_game_over and self.play_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.is_game_over = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.is_shooting = False
+                self.weapon.is_shooting = False
 
     def _key_down_event(self, event):
         if event.key == pygame.K_q:
@@ -154,12 +154,6 @@ class ShooterTopdown:
             self.player.moving_left = False
 
     def _shoot(self):
-        if self.is_shooting:
-            if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
-                bullet = Bullet(self, self.player, self.weapon.angle, self.settings.player_damage, is_player=True)
-                self.bullets.add(bullet)
-                self.last_time_shot = pygame.time.get_ticks()
-
         # Checking collisions between bullets and enemys
         enemy_collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, False, False, pygame.sprite.collide_circle)
         for bullet, enemies_hit in enemy_collisions.items():

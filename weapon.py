@@ -2,6 +2,8 @@ import math
 
 import pygame
 
+from bullet import Bullet
+
 
 class Weapon:
     """The class that create and manages the player's weapon."""
@@ -10,6 +12,7 @@ class Weapon:
         """Start the needed variables"""
 
         # Basic
+        self.st_game = st_game
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
         self.settings = st_game.settings
@@ -20,6 +23,8 @@ class Weapon:
         self.weapon_width = 55
         self.weapon_height = 12
         self.distance = 40
+        self.is_shooting = False
+        self.last_time_shot = pygame.time.get_ticks()
 
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
 
@@ -41,6 +46,12 @@ class Weapon:
 
         self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
         self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
+
+        if self.is_shooting:
+            if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
+                bullet = Bullet(self.st_game, self.player, self.angle, self.settings.player_damage, is_player=True)
+                self.st_game.bullets.add(bullet)
+                self.last_time_shot = pygame.time.get_ticks()
 
     def drawme(self):
         # Draw a rectangle inside the gun_surface
