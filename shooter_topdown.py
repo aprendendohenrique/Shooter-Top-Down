@@ -73,10 +73,13 @@ class ShooterTopdown:
             self._check_events()
 
             if not self.is_game_over:
+                # Player & Camera
+                self.player.update()
+                self.screen_x = self.player.x - self.screen.get_width() // 2
+                self.screen_y = self.player.y - self.screen.get_height() // 2
 
                 # Objects
-                self.player.update()
-                self.weapons[self.chosen_weapon].update()
+                self.weapons[self.chosen_weapon].update(self.screen_x, self.screen_y)
                 self.bullets.update()
                 self.enemies.update()
 
@@ -84,7 +87,7 @@ class ShooterTopdown:
                 self._shoot()
 
                 # Mouse position Text
-                self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
+                # self.text_surface = self.font.render(f"{pygame.mouse.get_pos()}", True, "white")
 
             # Update the screen
             self._update_screen()
@@ -98,15 +101,15 @@ class ShooterTopdown:
 
         if not self.is_game_over:
             # Objects
-            self.player.drawme()
-            self.weapons[self.chosen_weapon].drawme()
+            self.player.drawme(self.screen_x, self.screen_y)
+            self.weapons[self.chosen_weapon].drawme(self.screen_x, self.screen_y)
             for bullet in self.bullets:
-                bullet.drawme()
+                bullet.drawme(self.screen_x, self.screen_y)
             for enemy in self.enemies:
-                enemy.drawme()
+                enemy.drawme(self.screen_x, self.screen_y)
 
             # Text of the mouse position
-            self.screen.blit(self.text_surface, (0, 465))
+            # self.screen.blit(self.text_surface, (0, 465))
         else:
             # Game Over Screen
             self.screen.blit(self.game_over_surface, (0, 0))
@@ -164,7 +167,7 @@ class ShooterTopdown:
             self.player.moving_left = False
 
     def _shoot(self):
-        # Checking collisions between bullets and enemys
+        # Checking collisions between bullets and enemies
         enemy_collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, False, False, pygame.sprite.collide_circle)
         for bullet, enemies_hit in enemy_collisions.items():
             if bullet.is_player:

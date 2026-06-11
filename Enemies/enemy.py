@@ -38,8 +38,8 @@ class Enemy(Sprite):
         self.x_rect = float(self.rect.x)
         self.y_rect = float(self.rect.y)
 
-    def drawme(self):
-        pygame.draw.rect(self.screen, self.current_color, self.rect)
+    def drawme(self, screen_x, screen_y):
+        pygame.draw.rect(self.screen, self.current_color, self.rect.move(-screen_x, -screen_y))
 
     def get_hit(self, damage):
         self.health -= damage

@@ -111,8 +111,8 @@ class Player(Sprite):
             self.got_hit = False
             self.current_color = self.color
 
-    def drawme(self):
-        pygame.draw.rect(self.screen, self.current_color, self.rect)
+    def drawme(self, screen_x, screen_y):
+        pygame.draw.rect(self.screen, self.current_color, self.rect.move(-screen_x, -screen_y))
 
     def get_hit(self, damage):
         self.settings.player_health -= damage

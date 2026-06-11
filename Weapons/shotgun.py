@@ -22,14 +22,17 @@ class Shotgun(Weapon):
         # Shotgun unique parameters
         self.spread = 0.1
 
-    def update(self):
+    def update(self, screen_x, screen_y):
         """Update the enemy every tick"""
         # Position the weapon around the player
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        dx = mouse_x - self.player.rect.centerx
-        dy = mouse_y - self.player.rect.centery
+        mouse_world_x = mouse_x + screen_x
+        mouse_world_y = mouse_y + screen_y
+
+        dx = mouse_world_x - self.player.rect.centerx
+        dy = mouse_world_y - self.player.rect.centery
 
         self.angle = math.atan2(dy, dx)
 
@@ -51,12 +54,12 @@ class Shotgun(Weapon):
                     self.angle -= self.spread
                 self.last_time_shot = pygame.time.get_ticks()
 
-    def drawme(self):
+    def drawme(self, screen_x, screen_y):
         # Draw a rectangle inside the gun_surface
         pygame.draw.rect(self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height))
 
         # Blit(put) the rotated_surface(gun_surface but rotated) to the screen
-        self.screen.blit(self.rotated_surface, self.rotated_rect)
+        self.screen.blit(self.rotated_surface, self.rotated_rect.move(-screen_x, -screen_y))
 
         # Draw a line from the player to the mouse
-        pygame.draw.line(self.screen, "red", self.player.rect.center, pygame.mouse.get_pos(), 3)
+        # pygame.draw.line(self.screen, "red", self.player.rect.center, pygame.mouse.get_pos(), 3)

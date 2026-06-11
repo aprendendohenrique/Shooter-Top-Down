@@ -99,8 +99,8 @@ class Shooter(Enemy):
             self.got_hit = False
             self.current_color = self.color
 
-    def drawme(self):
-        pygame.draw.rect(self.screen, self.current_color, self.rect)
+    def drawme(self, screen_x, screen_y):
+        pygame.draw.rect(self.screen, self.current_color, self.rect.move(-screen_x, -screen_y))
         pygame.draw.rect(self.gun_surface, self.weapon_color, (0, 0, self.weapon_width, self.weapon_height))
         if self.rotated_surface:
-            self.screen.blit(self.rotated_surface, self.rotated_rect)
+            self.screen.blit(self.rotated_surface, self.rotated_rect.move(-screen_x, -screen_y))
