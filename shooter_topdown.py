@@ -61,7 +61,6 @@ class ShooterTopdown:
         # Spawn System
         self.enemies_to_spawn = 1
         self.max_enemies = 8
-        self.enemies_spawned = 0
         self.x_spawn_positions = [0, self.screen_rect.width]
         self.enemies_classes = [Walker, Runner, Shooter]
         self._spawn()
@@ -174,10 +173,9 @@ class ShooterTopdown:
                     enemy.get_hit(bullet.bullet_damage)
                     if enemy.health <= 0:
                         enemy.kill()
-                        self.enemies_spawned -= 1
-                        print(self.enemies_spawned)
-                        if self.enemies_spawned <= 0:
-                            self._spawn()
+        if len(self.enemies) <= 0:
+            self._spawn()
+
         player_collisions = pygame.sprite.spritecollide(self.player, self.bullets, False)
         for bullet in player_collisions:
             if not bullet.is_player:
@@ -192,7 +190,6 @@ class ShooterTopdown:
             y = random.randint(0, self.screen_rect.height)
             enemy.reposition_me((x, y))
             self.enemies.add(enemy)
-        self.enemies_spawned = len(self.enemies)
         if self.enemies_to_spawn < self.max_enemies:
             self.enemies_to_spawn += 1
 
@@ -203,7 +200,6 @@ class ShooterTopdown:
         self.settings.player_health = self.settings.player_max_health
         self.player.reposition_me(self.screen_rect.center)
         self.enemies_to_spawn = 1
-        self.enemies_spawned = 0
         self._spawn()
 
 

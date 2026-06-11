@@ -34,7 +34,8 @@ class Rifle(Weapon):
 
         if self.is_shooting:
             if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
-                bullet = Bullet(self.st_game, self.player, self.angle, self.bullet_distance, self.settings.player_damage, is_player=True)
+                bullet = Bullet(self.st_game, self.player, self.angle, self.bullet_distance,
+                                self.damage, is_player=True)
                 self.st_game.bullets.add(bullet)
                 self.last_time_shot = pygame.time.get_ticks()
 

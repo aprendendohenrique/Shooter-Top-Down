@@ -17,6 +17,7 @@ class Weapon:
         self.player = player
 
         # Weapon
+        self.damage = 1
         self.color = 50, 50, 50
         self.weapon_width = 55
         self.weapon_height = 12

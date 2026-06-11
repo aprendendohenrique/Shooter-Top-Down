@@ -15,6 +15,7 @@ class Shotgun(Weapon):
         self.weapon_width = 48
         self.weapon_height = 22
         self.bullet_distance = self.weapon_height + self.distance + 8
+        self.damage = 0.5
 
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
 
@@ -45,7 +46,7 @@ class Shotgun(Weapon):
                 self.angle += self.spread * 2
                 for _ in range(5):
                     bullet = Bullet(self.st_game, self.player, self.angle, self.bullet_distance,
-                                    self.settings.player_damage, is_player=True, size=7)
+                                    self.damage, is_player=True, size=7)
                     self.st_game.bullets.add(bullet)
                     self.angle -= self.spread
                 self.last_time_shot = pygame.time.get_ticks()
