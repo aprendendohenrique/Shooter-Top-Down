@@ -5,8 +5,7 @@ import pygame
 
 from settings import Settings
 from player import Player
-from weapon import Weapon
-from bullet import Bullet
+from Weapons.rifle import Rifle
 from Enemies.walker import Walker
 from Enemies.runner import Runner
 from Enemies.shooter import Shooter
@@ -42,9 +41,13 @@ class ShooterTopdown:
 
         # Objects
         self.player = Player(self)
-        self.weapon = Weapon(self, self.player)
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+
+        # Weapons
+        self.rifle = Rifle(self, self.player)
+        self.weapons = [self.rifle]
+        self.chosen_weapon = 0
 
         # Shoot
         self.last_time_shot = pygame.time.get_ticks()
@@ -72,7 +75,7 @@ class ShooterTopdown:
 
                 # Objects
                 self.player.update()
-                self.weapon.update()
+                self.weapons[self.chosen_weapon].update()
                 self.bullets.update()
                 self.enemies.update()
 
@@ -95,7 +98,7 @@ class ShooterTopdown:
         if not self.is_game_over:
             # Objects
             self.player.drawme()
-            self.weapon.drawme()
+            self.weapons[self.chosen_weapon].drawme()
             for bullet in self.bullets:
                 bullet.drawme()
             for enemy in self.enemies:
@@ -121,13 +124,13 @@ class ShooterTopdown:
             elif event.type == pygame.KEYUP:
                 self._key_up_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.weapon.is_shooting = True
+                self.weapons[self.chosen_weapon].is_shooting = True
 
                 # Game Over
                 if self.is_game_over and self.play_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.is_game_over = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.weapon.is_shooting = False
+                self.weapons[self.chosen_weapon].is_shooting = False
 
     def _key_down_event(self, event):
         if event.key == pygame.K_q:
