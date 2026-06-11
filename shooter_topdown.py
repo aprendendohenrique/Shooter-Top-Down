@@ -6,6 +6,7 @@ import pygame
 from settings import Settings
 from player import Player
 from Weapons.rifle import Rifle
+from Weapons.shotgun import Shotgun
 from Enemies.walker import Walker
 from Enemies.runner import Runner
 from Enemies.shooter import Shooter
@@ -46,7 +47,8 @@ class ShooterTopdown:
 
         # Weapons
         self.rifle = Rifle(self, self.player)
-        self.weapons = [self.rifle]
+        self.shotgun = Shotgun(self, self.player)
+        self.weapons = [self.rifle, self.shotgun]
         self.chosen_weapon = 0
 
         # Shoot
@@ -145,6 +147,12 @@ class ShooterTopdown:
             self.player.moving_left = True
         elif event.key == pygame.K_SPACE:
             self.player.dashing = True
+        elif event.key == pygame.K_1:
+            self.weapons[self.chosen_weapon].is_shooting = False
+            self.chosen_weapon = 0
+        elif event.key == pygame.K_2:
+            self.weapons[self.chosen_weapon].is_shooting = False
+            self.chosen_weapon = 1
 
     def _key_up_event(self, event):
         if event.key == pygame.K_s:
@@ -167,6 +175,7 @@ class ShooterTopdown:
                     if enemy.health <= 0:
                         enemy.kill()
                         self.enemies_spawned -= 1
+                        print(self.enemies_spawned)
                         if self.enemies_spawned <= 0:
                             self._spawn()
         player_collisions = pygame.sprite.spritecollide(self.player, self.bullets, False)

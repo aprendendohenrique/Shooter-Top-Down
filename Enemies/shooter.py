@@ -37,6 +37,7 @@ class Shooter(Enemy):
         self.weapon_width = 55
         self.weapon_height = 12
         self.weapon_distance = 40
+        self.bullet_distance = self.weapon_height + self.weapon_distance + 20
 
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
         self.rotated_surface = None
@@ -76,7 +77,7 @@ class Shooter(Enemy):
             # Weapon shooting
             if distance < self.attack_range + self.player.rect.width:
                 if pygame.time.get_ticks() - self.last_time_shot >= self.firerate:
-                    bullet = Bullet(self.st_game, self, self.angle, self.damage, 7,"red")
+                    bullet = Bullet(self.st_game, self, self.angle, self.bullet_distance,  self.damage, 7,"red")
                     self.st_game.bullets.add(bullet)
                     self.last_time_shot = pygame.time.get_ticks()
             else:

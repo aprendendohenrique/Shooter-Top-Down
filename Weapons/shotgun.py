@@ -6,12 +6,20 @@ from Weapons.weapon import Weapon
 from bullet import Bullet
 
 
-class Rifle(Weapon):
-    """Class that manages the Rifle weapon"""
-    
+class Shotgun(Weapon):
+    """Class that manages the Shotgun weapon."""
+
     def __init__(self, st_game, player):
         super().__init__(st_game, player)
-        self.bullet_distance = self.weapon_height + self.distance + 20
+        self.color = 100, 10, 10
+        self.weapon_width = 48
+        self.weapon_height = 22
+        self.bullet_distance = self.weapon_height + self.distance + 8
+
+        self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
+
+        # Shotgun unique parameters
+        self.spread = 0.1
 
     def update(self):
         """Update the enemy every tick"""
@@ -34,8 +42,12 @@ class Rifle(Weapon):
 
         if self.is_shooting:
             if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
-                bullet = Bullet(self.st_game, self.player, self.angle, self.bullet_distance, self.settings.player_damage, is_player=True)
-                self.st_game.bullets.add(bullet)
+                self.angle += self.spread * 2
+                for _ in range(5):
+                    bullet = Bullet(self.st_game, self.player, self.angle, self.bullet_distance,
+                                    self.settings.player_damage, is_player=True, size=7)
+                    self.st_game.bullets.add(bullet)
+                    self.angle -= self.spread
                 self.last_time_shot = pygame.time.get_ticks()
 
     def drawme(self):
