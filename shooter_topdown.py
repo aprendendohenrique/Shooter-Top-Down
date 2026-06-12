@@ -4,6 +4,7 @@ import random
 import pygame
 
 from settings import Settings
+from Scenario.scenario import Scenario
 from player import Player
 from Weapons.rifle import Rifle
 from Weapons.shotgun import Shotgun
@@ -25,6 +26,9 @@ class ShooterTopdown:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
         self.screen_rect = self.screen.get_rect()
+
+        # Scenario
+        self.scenario = Scenario(self)
 
         # Game Over
         self.is_game_over = True
@@ -73,6 +77,8 @@ class ShooterTopdown:
             self._check_events()
 
             if not self.is_game_over:
+                # Scenario
+
                 # Player & Camera
                 self.player.update()
                 self.screen_x = self.player.x - self.screen.get_width() // 2
@@ -100,6 +106,9 @@ class ShooterTopdown:
         self.screen.fill(self.settings.background_color)
 
         if not self.is_game_over:
+            # Scenario
+            self.scenario.draw_scenario(self.screen_x, self.screen_y)
+
             # Objects
             self.player.drawme(self.screen_x, self.screen_y)
             self.weapons[self.chosen_weapon].drawme(self.screen_x, self.screen_y)
