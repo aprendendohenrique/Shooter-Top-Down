@@ -107,15 +107,15 @@ class ShooterTopdown:
 
         if not self.is_game_over:
             # Scenario
-            self.scenario.draw_scenario(self.screen_x, self.screen_y)
+            self.scenario.draw_scenario()
 
             # Objects
-            self.player.drawme(self.screen_x, self.screen_y)
-            self.weapons[self.chosen_weapon].drawme(self.screen_x, self.screen_y)
+            self.player.drawme()
+            self.weapons[self.chosen_weapon].drawme()
             for bullet in self.bullets:
-                bullet.drawme(self.screen_x, self.screen_y)
+                bullet.drawme()
             for enemy in self.enemies:
-                enemy.drawme(self.screen_x, self.screen_y)
+                enemy.drawme()
 
             # Text of the mouse position
             # self.screen.blit(self.text_surface, (0, 465))
@@ -159,10 +159,8 @@ class ShooterTopdown:
         elif event.key == pygame.K_SPACE:
             self.player.dashing = True
         elif event.key == pygame.K_1:
-            self.weapons[self.chosen_weapon].is_shooting = False
             self.chosen_weapon = 0
         elif event.key == pygame.K_2:
-            self.weapons[self.chosen_weapon].is_shooting = False
             self.chosen_weapon = 1
 
     def _key_up_event(self, event):

@@ -42,12 +42,12 @@ class Rifle(Weapon):
                 self.st_game.bullets.add(bullet)
                 self.last_time_shot = pygame.time.get_ticks()
 
-    def drawme(self, screen_x, screen_y):
+    def drawme(self):
         # Draw a rectangle inside the gun_surface
         pygame.draw.rect(self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height))
 
         # Blit(put) the rotated_surface(gun_surface but rotated) to the screen
-        self.screen.blit(self.rotated_surface, self.rotated_rect.move(-screen_x, -screen_y))
+        self.screen.blit(self.rotated_surface, self.rotated_rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
 
         # Draw a line from the player to the mouse
         # pygame.draw.line(self.screen, "red", self.player.rect.center, pygame.mouse.get_pos(), 3)

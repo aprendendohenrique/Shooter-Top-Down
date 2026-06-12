@@ -13,6 +13,7 @@ class Bullet(Sprite):
         super().__init__()
 
         # Base
+        self.st_game = st_game
         self.settings = st_game.settings
         self.screen = st_game.screen
         self.is_player = is_player
@@ -51,7 +52,7 @@ class Bullet(Sprite):
         if current_time - self.spawn_time > self.settings.bullet_despawn_time:
             self.kill()
 
-    def drawme(self, screen_x, screen_y):
+    def drawme(self):
         pygame.draw.circle(self.surface, self.bullet_color,
                            (self.bullet_radius, self.bullet_radius), self.bullet_radius)
-        self.screen.blit(self.surface, self.rect.move(-screen_x, -screen_y))
+        self.screen.blit(self.surface, self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y))

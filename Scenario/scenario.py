@@ -7,7 +7,7 @@ class Scenario:
     def __init__(self, st_game):
         self.screen = st_game.screen
 
-        self.wall = Wall(st_game, self.screen.get_width() + 50, self.screen.get_height() + 50,0, 0)
+        self.wall = Wall(st_game, self.screen.get_width(), self.screen.get_height(),-25, -25)
 
-    def draw_scenario(self, screen_x, screen_y):
-        self.wall.drawme(screen_x, screen_y)
+    def draw_scenario(self):
+        self.wall.drawme()
