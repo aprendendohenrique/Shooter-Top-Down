@@ -44,7 +44,7 @@ class Shotgun(Weapon):
         self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
         self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
 
-        if self.is_shooting:
+        if self.st_game.is_shooting:
             if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
                 self.angle += self.spread * 2
                 for _ in range(5):

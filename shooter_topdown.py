@@ -128,13 +128,13 @@ class ShooterTopdown:
             elif event.type == pygame.KEYUP:
                 self._key_up_event(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.weapons[self.chosen_weapon].is_shooting = True
+                self.is_shooting = True
 
                 # Game Over
                 if self.is_game_over and self.play_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.is_game_over = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.weapons[self.chosen_weapon].is_shooting = False
+                self.is_shooting = False
 
     def _key_down_event(self, event):
         if event.key == pygame.K_q:

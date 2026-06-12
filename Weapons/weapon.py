@@ -22,7 +22,6 @@ class Weapon:
         self.weapon_width = 55
         self.weapon_height = 12
         self.distance = 40
-        self.is_shooting = False
         self.last_time_shot = pygame.time.get_ticks()
 
         self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
