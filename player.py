@@ -117,7 +117,26 @@ class Player(Sprite):
             self.last_x_vector /= mag
 
             self.y += self.last_y_vector * self.settings.dash_speed
+            self.rect.y = int(self.y)
+            # Checking for player/walls collisions
+            collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+            for wall in collisions:
+                if self.last_y_vector > 0:
+                    self.rect.bottom = wall.rect.top
+                if self.last_y_vector < 0:
+                    self.rect.top = wall.rect.bottom
+                self.y = self.rect.y
+
             self.x += self.last_x_vector * self.settings.dash_speed
+            self.rect.x = int(self.x)
+            # Checking for player/walls collisions
+            collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+            for wall in collisions:
+                if self.last_x_vector > 0:
+                    self.rect.right = wall.rect.left
+                elif self.last_x_vector < 0:
+                    self.rect.left = wall.rect.right
+                self.x = self.rect.x
         else:
             self.can_dash = False
             self.dashing = False
