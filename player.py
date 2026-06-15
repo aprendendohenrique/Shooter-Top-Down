@@ -1,6 +1,7 @@
 import math
 
 import pygame
+from pygame.event import set_keyboard_grab
 from pygame.sprite import Sprite
 
 
@@ -86,7 +87,26 @@ class Player(Sprite):
                 x_vector /= mag
 
                 self.y += y_vector * self.settings.player_speed
+                self.rect.y = int(self.y)
+                # Checking for player/walls collisions
+                collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                for wall in collisions:
+                    if y_vector > 0:
+                        self.rect.bottom = wall.rect.top
+                    if y_vector < 0:
+                        self.rect.top = wall.rect.bottom
+                    self.y = self.rect.y
+
                 self.x += x_vector * self.settings.player_speed
+                self.rect.x = int(self.x)
+                # Checking for player/walls collisions
+                collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                for wall in collisions:
+                    if x_vector > 0:
+                        self.rect.right = wall.rect.left
+                    elif x_vector < 0:
+                        self.rect.left = wall.rect.right
+                    self.x = self.rect.x
 
         elif (self.last_x_vector != 0 or self.last_y_vector != 0) and self.tick - self.last_time_dashed < self.settings.dash_duration:
 
@@ -102,8 +122,8 @@ class Player(Sprite):
             self.can_dash = False
             self.dashing = False
 
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = int(self.x)
+        self.rect.y = int(self.y)
 
         """Hit"""
         # Check if the animation is still going, if not, it runs the animation
@@ -122,7 +142,13 @@ class Player(Sprite):
         if self.settings.player_health <= 0:
             self.st_game.game_over()
 
-    def reposition_me(self, position=(0, 0)):
-        self.rect.center = position
-        self.x = self.rect.x
-        self.y = self.rect.y
+    def reposition_me(self, position=(0, 0), center=True):
+        if center:
+            self.rect.center = position
+            self.x = self.rect.x
+            self.y = self.rect.y
+        else:
+            self.rect.x = position[0]
+            self.rect.y = position[1]
+            self.x = self.rect.x
+            self.y =self.rect.y

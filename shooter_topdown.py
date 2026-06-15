@@ -27,9 +27,6 @@ class ShooterTopdown:
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
         self.screen_rect = self.screen.get_rect()
 
-        # Scenario
-        self.scenario = Scenario(self)
-
         # Game Over
         self.is_game_over = True
         self.game_over_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
@@ -44,8 +41,10 @@ class ShooterTopdown:
         self.play_text_rect = self.play_text.get_rect()
         self.play_text_rect.center = self.play_button_rect.center
 
-        # Objects
+        # Player
         self.player = Player(self)
+
+        # Objects
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
 
@@ -67,7 +66,9 @@ class ShooterTopdown:
         self.max_enemies = 8
         self.x_spawn_positions = [0, self.screen_rect.width]
         self.enemies_classes = [Walker, Runner, Shooter]
-        self._spawn()
+
+        # Scenario
+        self.scenario = Scenario(self)
 
 
 
@@ -77,7 +78,6 @@ class ShooterTopdown:
             self._check_events()
 
             if not self.is_game_over:
-                # Scenario
 
                 # Player & Camera
                 self.player.update()
@@ -183,8 +183,8 @@ class ShooterTopdown:
                     enemy.get_hit(bullet.bullet_damage)
                     if enemy.health <= 0:
                         enemy.kill()
-        if len(self.enemies) <= 0:
-            self._spawn()
+        # if len(self.enemies) <= 0:
+        #     self._spawn()
 
         player_collisions = pygame.sprite.spritecollide(self.player, self.bullets, False)
         for bullet in player_collisions:

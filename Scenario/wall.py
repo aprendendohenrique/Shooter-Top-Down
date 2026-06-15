@@ -9,12 +9,11 @@ class Wall(Sprite):
         super().__init__()
         self.st_game = st_game
         self.screen = st_game.screen
+        self.player = self.st_game.player
 
+        self.colliding = False
         self.color = color
         self.rect = pygame.Rect(x, y, width, height)
-
-    def update(self):
-        print("hi")
 
     def drawme(self):
         pygame.draw.rect(self.screen, self.color, self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y))

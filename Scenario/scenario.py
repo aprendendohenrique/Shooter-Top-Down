@@ -1,3 +1,5 @@
+import pygame.sprite
+
 from Scenario.wall import Wall
 
 
@@ -6,8 +8,14 @@ class Scenario:
 
     def __init__(self, st_game):
         self.screen = st_game.screen
+        self.screen_rect = st_game.screen_rect
 
-        self.wall = Wall(st_game, self.screen.get_width(), self.screen.get_height(),-25, -25)
+        self.collideable_objects = pygame.sprite.Group()
+
+        self.wall = Wall(st_game, 200, 50, 0, 150)
+        self.wall.rect.centerx = self.screen_rect.centerx
+
+        self.collideable_objects.add(self.wall)
 
     def draw_scenario(self):
         self.wall.drawme()
