@@ -183,8 +183,8 @@ class ShooterTopdown:
                     enemy.get_hit(bullet.bullet_damage)
                     if enemy.health <= 0:
                         enemy.kill()
-        # if len(self.enemies) <= 0:
-        #     self._spawn()
+        if len(self.enemies) <= 0:
+            self._spawn()
 
         player_collisions = pygame.sprite.spritecollide(self.player, self.bullets, False)
         for bullet in player_collisions:

@@ -31,8 +31,29 @@ class Runner(Enemy):
             angle = math.atan2(distance_y, distance_x)
 
             if not self.rect.colliderect(self.player.rect):
+
                 self.x_rect += math.cos(angle) * self.speed
+                self.rect.x = self.x_rect
+                # Checking for player/walls collisions
+                collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                for wall in collisions:
+                    if math.cos(angle) > 0:
+                        self.rect.right = wall.rect.left
+                    elif math.cos(angle) < 0:
+                        self.rect.left = wall.rect.right
+                    self.x_rect = self.rect.x
+
                 self.y_rect += math.sin(angle) * self.speed
+                self.rect.y = self.y_rect
+                # Checking for player/walls collisions
+                collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                for wall in collisions:
+                    if math.sin(angle) > 0:
+                        self.rect.bottom = wall.rect.top
+                    elif math.sin(angle) < 0:
+                        self.rect.top = wall.rect.bottom
+                    self.y_rect = self.rect.y
+
             elif pygame.time.get_ticks() - self.last_hit >= self.enemy_attack_speed:
                 self.last_hit = pygame.time.get_ticks()
                 self.player.get_hit(self.damage)
