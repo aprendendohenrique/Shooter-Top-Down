@@ -1,14 +1,14 @@
 class Settings:
-    """File that stores configurable information of the game"""
+    """File that stores important information of the game"""
 
     def __init__(self):
         """General Settings"""
         self.fps = 60
 
         """Screen Settings"""
-        self.screen_size = 500 # 720 is 1280 by 720 (16:9)
-        self.screen_resolution = self.screen_size * 1.78, self.screen_size
-        self.background_color = 0, 125, 0
+        self._screen_size = 500 # 720 is 1280 by 720 (16:9)
+        self.screen_resolution = self._screen_size * 1.78, self._screen_size
+        self.background_color = (0, 125, 0)
 
         """Player Settings"""
         self.player_max_health = 5

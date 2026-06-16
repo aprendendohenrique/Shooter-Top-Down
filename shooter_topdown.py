@@ -54,7 +54,7 @@ class ShooterTopdown:
         self.weapons = [self.rifle, self.shotgun]
         self.chosen_weapon = 0
 
-        # Shoot
+        # Shooting
         self.last_time_shot = pygame.time.get_ticks()
         self.is_shooting = False
 

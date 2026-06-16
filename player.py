@@ -1,12 +1,11 @@
 import math
 
 import pygame
-from pygame.event import set_keyboard_grab
 from pygame.sprite import Sprite
 
 
 class Player(Sprite):
-    """Class that creates and manages the player"""
+    """Class that manages the Player"""
 
     def __init__(self, st_game):
         """Start the needed variables"""
@@ -60,6 +59,7 @@ class Player(Sprite):
         x_vector = 0
         y_vector = 0
 
+        # Checking if the user is trying and can dash
         if self.dashing and self.tick - self.last_time_dashed >= self.settings.dash_cooldown:
             self.last_time_dashed = self.tick
             self.can_dash = True
@@ -80,16 +80,19 @@ class Player(Sprite):
 
             if x_vector != 0 or y_vector != 0:
 
-                # Normalize the vector and adds it to the players position
+                # Normalize the vector
                 mag = math.sqrt(x_vector**2 + y_vector**2)
 
                 y_vector /= mag
                 x_vector /= mag
 
+                # Moves the Player vertically
                 self.y += y_vector * self.settings.player_speed
                 self.rect.y = int(self.y)
-                # Checking for player/walls collisions
+
+                # Check for player/walls collisions
                 collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+
                 for wall in collisions:
                     if y_vector > 0:
                         self.rect.bottom = wall.rect.top
@@ -97,10 +100,13 @@ class Player(Sprite):
                         self.rect.top = wall.rect.bottom
                     self.y = self.rect.y
 
+                # Moves the Player horizontally
                 self.x += x_vector * self.settings.player_speed
                 self.rect.x = int(self.x)
+
                 # Checking for player/walls collisions
                 collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+
                 for wall in collisions:
                     if x_vector > 0:
                         self.rect.right = wall.rect.left
@@ -110,16 +116,19 @@ class Player(Sprite):
 
         elif (self.last_x_vector != 0 or self.last_y_vector != 0) and self.tick - self.last_time_dashed < self.settings.dash_duration:
 
-            # Normalize the vector and adds it to the players position
+            # Normalize the vector
             mag = math.sqrt(self.last_x_vector ** 2 + self.last_y_vector ** 2)
 
             self.last_y_vector /= mag
             self.last_x_vector /= mag
 
+            # Moves the Player vertically
             self.y += self.last_y_vector * self.settings.dash_speed
             self.rect.y = int(self.y)
+
             # Checking for player/walls collisions
             collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+
             for wall in collisions:
                 if self.last_y_vector > 0:
                     self.rect.bottom = wall.rect.top
@@ -127,10 +136,13 @@ class Player(Sprite):
                     self.rect.top = wall.rect.bottom
                 self.y = self.rect.y
 
+            # Moves the Player horizontally
             self.x += self.last_x_vector * self.settings.dash_speed
             self.rect.x = int(self.x)
+
             # Checking for player/walls collisions
             collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+
             for wall in collisions:
                 if self.last_x_vector > 0:
                     self.rect.right = wall.rect.left
