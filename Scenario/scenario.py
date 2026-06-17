@@ -18,4 +18,5 @@ class Scenario:
         self.collideable_objects.add(self.wall)
 
     def draw_scenario(self):
-        self.wall.drawme()
+        for wall in self.collideable_objects:
+            wall.drawme()
