@@ -2,8 +2,8 @@ import pygame
 from pygame.sprite import Sprite
 
 
-class Wall(Sprite):
-    """Class that manages a simple wall"""
+class Object(Sprite):
+    """Class that manages a simple object"""
 
     def __init__(self, st_game, width, height, x, y, color="grey"):
         super().__init__()
@@ -11,7 +11,6 @@ class Wall(Sprite):
         self.screen = st_game.screen
         self.player = self.st_game.player
 
-        self.colliding = False
         self.color = color
         self.rect = pygame.Rect(x, y, width, height)
 

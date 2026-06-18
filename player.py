@@ -93,12 +93,14 @@ class Player(Sprite):
                 # Check for player/walls collisions
                 collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
 
-                for wall in collisions:
-                    if y_vector > 0:
-                        self.rect.bottom = wall.rect.top
-                    if y_vector < 0:
-                        self.rect.top = wall.rect.bottom
-                    self.y = self.rect.y
+                for _ in range(2):
+                    for obj in collisions:
+                        if y_vector > 0:
+                            self.rect.bottom = obj.rect.top
+                        if y_vector < 0:
+                            self.rect.top = obj.rect.bottom
+                        self.y = self.rect.y
+                    collisions = pygame.sprite.spritecollide(self, self.st_game.enemies, False)
 
                 # Moves the Player horizontally
                 self.x += x_vector * self.settings.player_speed
@@ -107,12 +109,14 @@ class Player(Sprite):
                 # Checking for player/walls collisions
                 collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
 
-                for wall in collisions:
-                    if x_vector > 0:
-                        self.rect.right = wall.rect.left
-                    elif x_vector < 0:
-                        self.rect.left = wall.rect.right
-                    self.x = self.rect.x
+                for _ in range(2):
+                    for wall in collisions:
+                        if x_vector > 0:
+                            self.rect.right = wall.rect.left
+                        elif x_vector < 0:
+                            self.rect.left = wall.rect.right
+                        self.x = self.rect.x
+                    collisions = pygame.sprite.spritecollide(self, self.st_game.enemies, False)
 
         elif (self.last_x_vector != 0 or self.last_y_vector != 0) and self.tick - self.last_time_dashed < self.settings.dash_duration:
 
