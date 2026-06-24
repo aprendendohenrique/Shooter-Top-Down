@@ -17,7 +17,9 @@ class Shotgun(Weapon):
         self.bullet_distance = self.weapon_height + self.distance + 8
         self.damage = 0.5
 
-        self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
+        self.gun_surface = pygame.Surface(
+            (self.weapon_width, self.weapon_height), pygame.SRCALPHA
+        )
 
         # Shotgun unique parameters
         self.spread = 0.1
@@ -45,21 +47,33 @@ class Shotgun(Weapon):
         self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
 
         if self.st_game.is_shooting:
-            if pygame.time.get_ticks() - self.last_time_shot  >= self.settings.firerate:
+            if pygame.time.get_ticks() - self.last_time_shot >= self.settings.firerate:
                 self.angle += self.spread * 2
                 for _ in range(5):
-                    bullet = Bullet(self.st_game, self.player, self.angle, self.bullet_distance,
-                                    self.damage, is_player=True, size=7)
+                    bullet = Bullet(
+                        self.st_game,
+                        self.player,
+                        self.angle,
+                        self.bullet_distance,
+                        self.damage,
+                        is_player=True,
+                        size=7,
+                    )
                     self.st_game.bullets.add(bullet)
                     self.angle -= self.spread
                 self.last_time_shot = pygame.time.get_ticks()
 
     def drawme(self):
         # Draw a rectangle inside the gun_surface
-        pygame.draw.rect(self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height))
+        pygame.draw.rect(
+            self.gun_surface, self.color, (0, 0, self.weapon_width, self.weapon_height)
+        )
 
         # Blit(put) the rotated_surface(gun_surface but rotated) to the screen
-        self.screen.blit(self.rotated_surface, self.rotated_rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
+        self.screen.blit(
+            self.rotated_surface,
+            self.rotated_rect.move(-self.st_game.screen_x, -self.st_game.screen_y),
+        )
 
         # Draw a line from the player to the mouse
         # pygame.draw.line(self.screen, "red", self.player.rect.center, pygame.mouse.get_pos(), 3)

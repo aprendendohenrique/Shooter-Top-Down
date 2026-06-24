@@ -11,7 +11,9 @@ class Testing:
     def __init__(self):
         self.settings = Settings()
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(self.settings.screen_resolution, True, True)
+        self.screen = pygame.display.set_mode(
+            self.settings.screen_resolution, True, True
+        )
 
     def run_game(self):
         while True:
@@ -32,6 +34,7 @@ class Testing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+
 
 testing = Testing()
 testing.run_game()

@@ -15,5 +15,8 @@ class Object(Sprite):
         self.rect = pygame.Rect(x, y, width, height)
 
     def drawme(self):
-        pygame.draw.rect(self.screen, self.color, self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
-
+        pygame.draw.rect(
+            self.screen,
+            self.color,
+            self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y),
+        )

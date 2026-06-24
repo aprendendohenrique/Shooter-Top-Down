@@ -24,4 +24,6 @@ class Weapon:
         self.distance = 40
         self.last_time_shot = pygame.time.get_ticks()
 
-        self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
+        self.gun_surface = pygame.Surface(
+            (self.weapon_width, self.weapon_height), pygame.SRCALPHA
+        )

@@ -70,8 +70,6 @@ class ShooterTopdown:
         # Scenario
         self.scenario = Scenario(self)
 
-
-
     def run_game(self):
         while True:
             # Check key events
@@ -140,7 +138,9 @@ class ShooterTopdown:
                 self.is_shooting = True
 
                 # Game Over
-                if self.is_game_over and self.play_button_rect.collidepoint(pygame.mouse.get_pos()):
+                if self.is_game_over and self.play_button_rect.collidepoint(
+                    pygame.mouse.get_pos()
+                ):
                     self.is_game_over = False
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.is_shooting = False
@@ -175,7 +175,9 @@ class ShooterTopdown:
 
     def _shoot(self):
         # Checking collisions between bullets and enemies
-        enemy_collisions = pygame.sprite.groupcollide(self.bullets, self.enemies, False, False, pygame.sprite.collide_circle)
+        enemy_collisions = pygame.sprite.groupcollide(
+            self.bullets, self.enemies, False, False, pygame.sprite.collide_circle
+        )
         for bullet, enemies_hit in enemy_collisions.items():
             if bullet.is_player:
                 bullet.kill()
@@ -186,7 +188,9 @@ class ShooterTopdown:
         if len(self.enemies) <= 0:
             self._spawn()
 
-        player_collisions = pygame.sprite.spritecollide(self.player, self.bullets, False)
+        player_collisions = pygame.sprite.spritecollide(
+            self.player, self.bullets, False
+        )
         for bullet in player_collisions:
             if not bullet.is_player:
                 bullet.kill()
@@ -211,7 +215,6 @@ class ShooterTopdown:
         self.player.reposition_me(self.screen_rect.center)
         self.enemies_to_spawn = 1
         self._spawn()
-
 
 
 st_game = ShooterTopdown()

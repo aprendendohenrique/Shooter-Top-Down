@@ -60,7 +60,10 @@ class Player(Sprite):
         y_vector = 0
 
         # Checking if the user is trying and can dash
-        if self.dashing and self.tick - self.last_time_dashed >= self.settings.dash_cooldown:
+        if (
+            self.dashing
+            and self.tick - self.last_time_dashed >= self.settings.dash_cooldown
+        ):
             self.last_time_dashed = self.tick
             self.can_dash = True
 
@@ -91,7 +94,9 @@ class Player(Sprite):
                 self.rect.y = int(self.y)
 
                 # Check for player/walls collisions
-                collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                collisions = pygame.sprite.spritecollide(
+                    self, self.st_game.scenario.collideable_objects, False
+                )
 
                 for _ in range(2):
                     for obj in collisions:
@@ -100,14 +105,18 @@ class Player(Sprite):
                         if y_vector < 0:
                             self.rect.top = obj.rect.bottom
                         self.y = self.rect.y
-                    collisions = pygame.sprite.spritecollide(self, self.st_game.enemies, False)
+                    collisions = pygame.sprite.spritecollide(
+                        self, self.st_game.enemies, False
+                    )
 
                 # Moves the Player horizontally
                 self.x += x_vector * self.settings.player_speed
                 self.rect.x = int(self.x)
 
                 # Checking for player/walls collisions
-                collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                collisions = pygame.sprite.spritecollide(
+                    self, self.st_game.scenario.collideable_objects, False
+                )
 
                 for _ in range(2):
                     for wall in collisions:
@@ -116,12 +125,16 @@ class Player(Sprite):
                         elif x_vector < 0:
                             self.rect.left = wall.rect.right
                         self.x = self.rect.x
-                    collisions = pygame.sprite.spritecollide(self, self.st_game.enemies, False)
+                    collisions = pygame.sprite.spritecollide(
+                        self, self.st_game.enemies, False
+                    )
 
-        elif (self.last_x_vector != 0 or self.last_y_vector != 0) and self.tick - self.last_time_dashed < self.settings.dash_duration:
+        elif (
+            self.last_x_vector != 0 or self.last_y_vector != 0
+        ) and self.tick - self.last_time_dashed < self.settings.dash_duration:
 
             # Normalize the vector
-            mag = math.sqrt(self.last_x_vector ** 2 + self.last_y_vector ** 2)
+            mag = math.sqrt(self.last_x_vector**2 + self.last_y_vector**2)
 
             self.last_y_vector /= mag
             self.last_x_vector /= mag
@@ -131,7 +144,9 @@ class Player(Sprite):
             self.rect.y = int(self.y)
 
             # Checking for player/walls collisions
-            collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+            collisions = pygame.sprite.spritecollide(
+                self, self.st_game.scenario.collideable_objects, False
+            )
 
             for wall in collisions:
                 if self.last_y_vector > 0:
@@ -145,7 +160,9 @@ class Player(Sprite):
             self.rect.x = int(self.x)
 
             # Checking for player/walls collisions
-            collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+            collisions = pygame.sprite.spritecollide(
+                self, self.st_game.scenario.collideable_objects, False
+            )
 
             for wall in collisions:
                 if self.last_x_vector > 0:
@@ -167,7 +184,11 @@ class Player(Sprite):
             self.current_color = self.color
 
     def drawme(self):
-        pygame.draw.rect(self.screen, self.current_color, self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
+        pygame.draw.rect(
+            self.screen,
+            self.current_color,
+            self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y),
+        )
 
     def get_hit(self, damage):
         self.settings.player_health -= damage
@@ -186,4 +207,4 @@ class Player(Sprite):
             self.rect.x = position[0]
             self.rect.y = position[1]
             self.x = self.rect.x
-            self.y =self.rect.y
+            self.y = self.rect.y

@@ -6,7 +6,7 @@ class Settings:
         self.fps = 60
 
         """Screen Settings"""
-        self._screen_size = 500 # 720 is 1280 by 720 (16:9)
+        self._screen_size = 500  # 720 is 1280 by 720 (16:9)
         self.screen_resolution = self._screen_size * 1.78, self._screen_size
         self.background_color = (0, 125, 0)
 
@@ -23,4 +23,3 @@ class Settings:
         self.dash_duration = 100
         self.dash_cooldown = 500 + self.dash_duration
         self.dash_speed = 20
-

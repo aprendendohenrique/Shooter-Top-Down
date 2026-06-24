@@ -39,7 +39,9 @@ class Shooter(Enemy):
         self.weapon_distance = 40
         self.bullet_distance = self.weapon_height + self.weapon_distance + 20
 
-        self.gun_surface = pygame.Surface((self.weapon_width, self.weapon_height), pygame.SRCALPHA)
+        self.gun_surface = pygame.Surface(
+            (self.weapon_width, self.weapon_height), pygame.SRCALPHA
+        )
         self.rotated_surface = None
 
     def update(self):
@@ -50,7 +52,7 @@ class Shooter(Enemy):
         distance_x = self.player.rect.centerx - self.rect.centerx
         distance_y = self.player.rect.centery - self.rect.centery
 
-        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+        distance = math.sqrt(distance_x**2 + distance_y**2)
 
         if distance < self.vision_range + self.player.rect.width:
 
@@ -72,12 +74,22 @@ class Shooter(Enemy):
             angle = math.degrees(self.angle)
 
             self.rotated_surface = pygame.transform.rotate(self.gun_surface, -angle)
-            self.rotated_rect = self.rotated_surface.get_rect(center=(weapon_x, weapon_y))
+            self.rotated_rect = self.rotated_surface.get_rect(
+                center=(weapon_x, weapon_y)
+            )
 
             # Weapon shooting
             if distance < self.attack_range + self.player.rect.width:
                 if pygame.time.get_ticks() - self.last_time_shot >= self.firerate:
-                    bullet = Bullet(self.st_game, self, self.angle, self.bullet_distance,  self.damage, 7,"red")
+                    bullet = Bullet(
+                        self.st_game,
+                        self,
+                        self.angle,
+                        self.bullet_distance,
+                        self.damage,
+                        7,
+                        "red",
+                    )
                     self.st_game.bullets.add(bullet)
                     self.last_time_shot = pygame.time.get_ticks()
             else:
@@ -90,7 +102,9 @@ class Shooter(Enemy):
                     self.rect.x = self.x_rect
 
                     # Checking for wall collisions
-                    collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                    collisions = pygame.sprite.spritecollide(
+                        self, self.st_game.scenario.collideable_objects, False
+                    )
 
                     for wall in collisions:
                         if math.cos(angle) > 0:
@@ -111,7 +125,9 @@ class Shooter(Enemy):
                     self.rect.y = self.y_rect
 
                     # Checking for wall collisions
-                    collisions = pygame.sprite.spritecollide(self, self.st_game.scenario.collideable_objects, False)
+                    collisions = pygame.sprite.spritecollide(
+                        self, self.st_game.scenario.collideable_objects, False
+                    )
 
                     for wall in collisions:
                         if math.sin(angle) > 0:
@@ -135,13 +151,26 @@ class Shooter(Enemy):
                 self.rect.x = self.x_rect
                 self.rect.y = self.y_rect
 
-
-        if self.got_hit and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time:
+        if (
+            self.got_hit
+            and pygame.time.get_ticks() - self.got_hit_time >= self.hit_animation_time
+        ):
             self.got_hit = False
             self.current_color = self.color
 
     def drawme(self):
-        pygame.draw.rect(self.screen, self.current_color, self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
-        pygame.draw.rect(self.gun_surface, self.weapon_color, (0, 0, self.weapon_width, self.weapon_height))
+        pygame.draw.rect(
+            self.screen,
+            self.current_color,
+            self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y),
+        )
+        pygame.draw.rect(
+            self.gun_surface,
+            self.weapon_color,
+            (0, 0, self.weapon_width, self.weapon_height),
+        )
         if self.rotated_surface:
-            self.screen.blit(self.rotated_surface, self.rotated_rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
+            self.screen.blit(
+                self.rotated_surface,
+                self.rotated_rect.move(-self.st_game.screen_x, -self.st_game.screen_y),
+            )

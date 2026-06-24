@@ -4,7 +4,7 @@ from pygame.sprite import Sprite
 
 class Enemy(Sprite):
     """Main class that manages the simple enemy."""
-    
+
     def __init__(self, st_game):
         """Start all the needed variables"""
 
@@ -40,7 +40,11 @@ class Enemy(Sprite):
         self.y_rect = float(self.rect.y)
 
     def drawme(self):
-        pygame.draw.rect(self.screen, self.current_color, self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y))
+        pygame.draw.rect(
+            self.screen,
+            self.current_color,
+            self.rect.move(-self.st_game.screen_x, -self.st_game.screen_y),
+        )
 
     def get_hit(self, damage):
         self.health -= damage
