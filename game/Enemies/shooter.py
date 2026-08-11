@@ -1,10 +1,9 @@
 import math
 
 import pygame
-from numpy.ma.core import angle
 
-from Enemies.enemy import Enemy
-from bullet import Bullet
+from game.Enemies.enemy import Enemy
+from game.bullet import Bullet
 
 
 class Shooter(Enemy):

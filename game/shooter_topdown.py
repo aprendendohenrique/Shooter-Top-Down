@@ -8,9 +8,9 @@ from Scenario.scenario import Scenario
 from player import Player
 from Weapons.rifle import Rifle
 from Weapons.shotgun import Shotgun
-from Enemies.walker import Walker
-from Enemies.runner import Runner
-from Enemies.shooter import Shooter
+from game.Enemies.walker import Walker
+from game.Enemies.runner import Runner
+from game.Enemies.shooter import Shooter
 
 
 class ShooterTopdown:

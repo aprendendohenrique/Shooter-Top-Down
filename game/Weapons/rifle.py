@@ -2,27 +2,16 @@ import math
 
 import pygame
 
-from Weapons.weapon import Weapon
-from bullet import Bullet
+from game.Weapons.weapon import Weapon
+from game.bullet import Bullet
 
 
-class Shotgun(Weapon):
-    """Class that manages the Shotgun weapon."""
+class Rifle(Weapon):
+    """Class that manages the Rifle weapon"""
 
     def __init__(self, st_game, player):
         super().__init__(st_game, player)
-        self.color = 100, 10, 10
-        self.weapon_width = 48
-        self.weapon_height = 22
-        self.bullet_distance = self.weapon_height + self.distance + 8
-        self.damage = 0.5
-
-        self.gun_surface = pygame.Surface(
-            (self.weapon_width, self.weapon_height), pygame.SRCALPHA
-        )
-
-        # Shotgun unique parameters
-        self.spread = 0.1
+        self.bullet_distance = self.weapon_height + self.distance + 20
 
     def update(self, screen_x, screen_y):
         """Update the enemy every tick"""
@@ -48,19 +37,15 @@ class Shotgun(Weapon):
 
         if self.st_game.is_shooting:
             if pygame.time.get_ticks() - self.last_time_shot >= self.settings.firerate:
-                self.angle += self.spread * 2
-                for _ in range(5):
-                    bullet = Bullet(
-                        self.st_game,
-                        self.player,
-                        self.angle,
-                        self.bullet_distance,
-                        self.damage,
-                        is_player=True,
-                        size=7,
-                    )
-                    self.st_game.bullets.add(bullet)
-                    self.angle -= self.spread
+                bullet = Bullet(
+                    self.st_game,
+                    self.player,
+                    self.angle,
+                    self.bullet_distance,
+                    self.damage,
+                    is_player=True,
+                )
+                self.st_game.bullets.add(bullet)
                 self.last_time_shot = pygame.time.get_ticks()
 
     def drawme(self):

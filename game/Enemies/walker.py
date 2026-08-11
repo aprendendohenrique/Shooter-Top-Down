@@ -2,7 +2,7 @@ import math
 
 import pygame
 
-from Enemies.enemy import Enemy
+from game.Enemies.enemy import Enemy
 
 
 class Walker(Enemy):

@@ -1,6 +1,6 @@
 import pygame.sprite
 
-from Scenario.object import Object
+from game.Scenario.object import Object
 
 
 class Scenario:
