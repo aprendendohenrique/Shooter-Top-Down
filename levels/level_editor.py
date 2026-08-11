@@ -25,6 +25,10 @@ class LevelEditor:
             self.clock.tick(self.settings.fps)
 
     def _update_screen(self):
+        self.screen.fill(self.settings.background_color)
+
+        self.draw_lines()
+
         pygame.display.flip()
 
     def check_events(self):
@@ -41,6 +45,16 @@ class LevelEditor:
 
         if event.key == pygame.K_q:
             sys.exit()
+
+    def draw_lines(self):
+        width = self.screen.get_width()
+        height = self.screen.get_height()
+
+        for x in range(0, width, self.settings.TILE_SIZE):
+            pygame.draw.line(self.screen, "black", start_pos=(x, 0), end_pos=(x, height), width=1)
+
+        for y in range(0, height, self.settings.TILE_SIZE):
+            pygame.draw.line(self.screen, "black", start_pos=(0, y), end_pos=(width, y), width=1)
 
 
 if __name__ == '__main__':
