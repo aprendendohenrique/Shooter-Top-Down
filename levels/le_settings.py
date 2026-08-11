@@ -10,4 +10,5 @@ class LESettings:
         # Grid
         self.x_offset = 100
         self.y_offset = 100
+        self.grid_width = 1
         self.TILE_SIZE = 32
