@@ -50,11 +50,14 @@ class LevelEditor:
         width = self.screen.get_width()
         height = self.screen.get_height()
 
-        for x in range(0, width, self.settings.TILE_SIZE):
-            pygame.draw.line(self.screen, "black", start_pos=(x, 0), end_pos=(x, height), width=1)
+        x_of = self.settings.x_offset
+        y_of = self.settings.y_offset
 
-        for y in range(0, height, self.settings.TILE_SIZE):
-            pygame.draw.line(self.screen, "black", start_pos=(0, y), end_pos=(width, y), width=1)
+        for x in range(0 + x_of, width - x_of, self.settings.TILE_SIZE):
+            pygame.draw.line(self.screen, "black", start_pos=(x, 0 + y_of), end_pos=(x, height - y_of), width=1)
+
+        for y in range(0 + y_of, height - y_of, self.settings.TILE_SIZE):
+            pygame.draw.line(self.screen, "black", start_pos=(0 + x_of, y), end_pos=(width - x_of, y), width=1)
 
 
 if __name__ == '__main__':
