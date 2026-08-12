@@ -42,6 +42,8 @@ class LevelEditor:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._key_down_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self._mouse_down_events()
 
     def _key_down_events(self, event):
         """Handles every KeyBoard Down events"""
@@ -53,6 +55,19 @@ class LevelEditor:
                 self.show_grid = False
             else:
                 self.show_grid = True
+
+    def _mouse_down_events(self):
+        x, y = pygame.mouse.get_pos()
+        cor_x = x - self.settings.x_offset
+        cor_y = y - self.settings.y_offset
+
+        x_border = self.screen.get_width() - self.settings.x_offset
+        y_border = self.screen.get_height() - self.settings.y_offset
+        if (cor_x > 0 and cor_y > 0) and (x < x_border and y < y_border):
+            x_grid = (x - self.settings.x_offset) // 32
+            y_grid = (y - self.settings.y_offset) // 32
+
+            print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
     def draw_lines(self):
         width = self.screen.get_width()
