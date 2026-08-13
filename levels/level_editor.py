@@ -82,6 +82,11 @@ class LevelEditor:
         for y in range(0 + y_of, height - y_of, self.settings.TILE_SIZE):
             pygame.draw.line(self.screen, "black", start_pos=(0 + x_of, y), end_pos=(width - x_of, y), width=self.settings.grid_width)
 
+class SegmentedButton:
+
+    def __init__(self):
+        """Class that creates many buttons that only one can be selected."""
+        ...
 
 if __name__ == '__main__':
     le = LevelEditor()
