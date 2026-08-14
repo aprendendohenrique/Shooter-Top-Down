@@ -14,8 +14,11 @@ class LevelEditor:
         self.settings = LESettings()
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
+        self.screen_rect = self.screen.get_rect()
 
         self.show_grid = True
+
+        self.button = Button(self, 420, 430, 50, 50)
 
     def run(self):
         """The main loop that runs the Level Editor"""
@@ -28,6 +31,8 @@ class LevelEditor:
 
     def _update_screen(self):
         self.screen.fill(self.settings.background_color)
+
+        self.button.draw_me()
 
         if self.show_grid:
             self.draw_lines()
@@ -68,6 +73,8 @@ class LevelEditor:
             y_grid = (y - self.settings.y_offset) // 32
 
             print(f"x: {x_grid + 1} y: {y_grid + 1}")
+        elif self.button.rect.collidepoint(x, y):
+            print("Clicked Button!")
 
     def draw_lines(self):
         width = self.screen.get_width()
@@ -81,6 +88,20 @@ class LevelEditor:
 
         for y in range(0 + y_of, height - y_of, self.settings.TILE_SIZE):
             pygame.draw.line(self.screen, "black", start_pos=(0 + x_of, y), end_pos=(width - x_of, y), width=self.settings.grid_width)
+
+class Button:
+
+    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0)):
+        self.le_editor = le_editor
+        self.screen = le_editor.screen
+        self.screen_rect = le_editor.screen_rect
+
+        self.color = color
+
+        self.rect = pygame.Rect(x, y, width, height)
+
+    def draw_me(self):
+        pygame.draw.rect(self.screen, self.color, self.rect)
 
 class SegmentedButton:
 
