@@ -13,10 +13,7 @@ class Button:
 
         self.color = color
 
-        if image:
-            self.image = pygame.image.load(image).convert()
-        else:
-            self.image = image
+        self.image = image
 
         self.rect = pygame.Rect(x, y, width, height)
 

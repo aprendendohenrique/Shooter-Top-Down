@@ -5,6 +5,7 @@ import pygame
 
 from le_settings import LESettings
 from le_buttons import Button
+from le_tileset_reader import TileSetReader
 
 
 class LevelEditor:
@@ -19,11 +20,13 @@ class LevelEditor:
         self.screen_rect = self.screen.get_rect()
 
         self.BASE_DIR = Path(__file__).resolve().parent
-        self.ASSERTS_DIR = self.BASE_DIR / "images" / "assets"
+        self.ASSETS_DIR = self.BASE_DIR / "images" / "assets"
+
+        self.grass_tileset = TileSetReader(self, self.ASSETS_DIR / "grass_tileset.png", 32, 32)
 
         self.show_grid = True
 
-        self.button = Button(self, 420, 430, 50, 50)
+        self.button = Button(self, 420, 430, 50, 50, image=self.grass_tileset[0])
 
     def run(self):
         """The main loop that runs the Level Editor"""
