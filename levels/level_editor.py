@@ -1,8 +1,10 @@
 import sys
+from pathlib import Path
 
 import pygame
 
 from le_settings import LESettings
+from le_buttons import Button
 
 
 class LevelEditor:
@@ -15,6 +17,9 @@ class LevelEditor:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
         self.screen_rect = self.screen.get_rect()
+
+        self.BASE_DIR = Path(__file__).resolve().parent
+        self.ASSERTS_DIR = self.BASE_DIR / "images" / "assets"
 
         self.show_grid = True
 
@@ -68,13 +73,12 @@ class LevelEditor:
 
         x_border = self.screen.get_width() - self.settings.x_offset
         y_border = self.screen.get_height() - self.settings.y_offset
+
         if (cor_x > 0 and cor_y > 0) and (x < x_border and y < y_border):
             x_grid = (x - self.settings.x_offset) // 32
             y_grid = (y - self.settings.y_offset) // 32
 
             print(f"x: {x_grid + 1} y: {y_grid + 1}")
-        elif self.button.rect.collidepoint(x, y):
-            print("Clicked Button!")
 
     def draw_lines(self):
         width = self.screen.get_width()
@@ -88,26 +92,6 @@ class LevelEditor:
 
         for y in range(0 + y_of, height - y_of, self.settings.TILE_SIZE):
             pygame.draw.line(self.screen, "black", start_pos=(0 + x_of, y), end_pos=(width - x_of, y), width=self.settings.grid_width)
-
-class Button:
-
-    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0)):
-        self.le_editor = le_editor
-        self.screen = le_editor.screen
-        self.screen_rect = le_editor.screen_rect
-
-        self.color = color
-
-        self.rect = pygame.Rect(x, y, width, height)
-
-    def draw_me(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
-
-class SegmentedButton:
-
-    def __init__(self):
-        """Class that creates many buttons that only one can be selected."""
-        ...
 
 if __name__ == '__main__':
     le = LevelEditor()
