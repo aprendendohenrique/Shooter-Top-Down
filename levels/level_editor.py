@@ -5,6 +5,7 @@ import pygame
 
 from le_settings import LESettings
 from le_buttons import Button
+from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetReader
 
 
@@ -27,6 +28,7 @@ class LevelEditor:
         self.show_grid = True
 
         self.button = Button(self, 420, 430, 50, 50, image=self.grass_tileset[0])
+        self.seg_button = SegmentedButton(self, 200, 430, 5, images=self.grass_tileset)
 
     def run(self):
         """The main loop that runs the Level Editor"""
@@ -40,10 +42,10 @@ class LevelEditor:
     def _update_screen(self):
         self.screen.fill(self.settings.background_color)
 
-        self.button.draw_me()
-
         if self.show_grid:
             self.draw_lines()
+
+        self.seg_button.draw_me()
 
         pygame.display.flip()
 
