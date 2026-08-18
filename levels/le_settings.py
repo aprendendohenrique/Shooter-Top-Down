@@ -8,7 +8,7 @@ class LESettings:
         self.fps = 60
 
         # Grid
-        self.x_offset = 100
-        self.y_offset = 100
+        self.x_offset = 124
+        self.y_offset = 121
         self.grid_width = 1
         self.TILE_SIZE = 32

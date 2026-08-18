@@ -53,7 +53,7 @@ class Shooter(Enemy):
 
         distance = math.sqrt(distance_x**2 + distance_y**2)
 
-        if distance < self.vision_range + self.player.rect.width:
+        if distance < self.vision_range + self.player.rect.tile_width:
 
             # Weapon aiming
             self.angle = math.atan2(distance_y, distance_x)
@@ -78,7 +78,7 @@ class Shooter(Enemy):
             )
 
             # Weapon shooting
-            if distance < self.attack_range + self.player.rect.width:
+            if distance < self.attack_range + self.player.rect.tile_width:
                 if pygame.time.get_ticks() - self.last_time_shot >= self.firerate:
                     bullet = Bullet(
                         self.st_game,

@@ -85,6 +85,7 @@ class LevelEditor:
 
             print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
+        # Seg button clicking
         self.seg_button.clicked()
 
     def draw_lines(self):

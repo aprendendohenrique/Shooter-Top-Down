@@ -27,7 +27,7 @@ class Runner(Enemy):
 
         distance = math.sqrt(distance_x**2 + distance_y**2)
 
-        if distance < self.vision_range + self.player.rect.width:
+        if distance < self.vision_range + self.player.rect.tile_width:
             angle = math.atan2(distance_y, distance_x)
 
             if not self.rect.colliderect(self.player.rect):
