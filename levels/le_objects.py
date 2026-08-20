@@ -11,5 +11,5 @@ class UIObject:
 
     def center(self):
         # Trying to do the cetering any object thing
-        self.rect.x = self.screen.get_width() / 2
-        self.rect.y = self.screen.get_height() / 2
+        self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
+        self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2

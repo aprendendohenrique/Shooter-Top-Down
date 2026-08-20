@@ -47,7 +47,6 @@ class SegmentedButton(UIObject):
 
         for count, image in enumerate(self.images):
             button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, id=count)
-            button.center()
             self.buttons.append(button)
 
             self.x += self.tile_width + spacing
