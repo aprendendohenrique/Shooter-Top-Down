@@ -27,8 +27,10 @@ class LevelEditor:
 
         self.show_grid = True
 
-        self.button = Button(self, 420, 430, 50, 50, image=self.grass_tileset[0])
+        self.button = Button(self, 420, 430, 32, 32, image=self.grass_tileset[0])
+
         self.seg_button = SegmentedButton(self, 200, 430, 5, images=self.grass_tileset)
+        self.seg_button.center()
 
     def run(self):
         """The main loop that runs the Level Editor"""
@@ -46,6 +48,10 @@ class LevelEditor:
             self.draw_lines()
 
         self.seg_button.draw_me()
+        self.button.draw_me()
+
+        horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
+        vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
 
         pygame.display.flip()
 
