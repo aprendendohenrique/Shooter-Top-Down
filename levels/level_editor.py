@@ -28,6 +28,7 @@ class LevelEditor:
         self.show_grid = True
 
         self.button = Button(self, 420, 430, 32, 32, image=self.grass_tileset[0])
+        self.button.center()
 
         self.seg_button = SegmentedButton(self, 200, 430, 5, images=self.grass_tileset)
         self.seg_button.center()

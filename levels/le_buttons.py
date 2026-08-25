@@ -46,22 +46,23 @@ class SegmentedButton(UIObject):
 
         self.images = images
 
-        self.buttons = []
+        self.objects = []
         self.x = x
         self.tile_width = images[0].get_width()
         self.tile_height = images[0].get_height()
+        self.spacing = self.tile_width + spacing
 
         # ----> Work here: Make so that every button is attached to the seg button
         # Do it by putting all the buttons to be drawn in a seg button Surface
 
         for count, image in enumerate(self.images):
             button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, id=count)
-            self.buttons.append(button)
+            self.objects.append(button)
 
-            self.x += self.tile_width + spacing
+            self.x += self.spacing
 
     def clicked(self):
-        for button in self.buttons:
+        for button in self.objects:
             clk = button.clicked()
             if clk:
                 print(clk.id)
@@ -69,5 +70,6 @@ class SegmentedButton(UIObject):
         return None
 
     def draw_me(self):
-        for button in self.buttons:
+        for button in self.objects:
             button.draw_me()
+        x = (self.objects[-1].rect.x - self.objects[0].rect.x) / 2
