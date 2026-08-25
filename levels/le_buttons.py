@@ -26,10 +26,16 @@ class Button(UIObject):
         return None
 
     def draw_me(self, surface=None):
-        if self.image:
-            self.screen.blit(self.image, self.rect)
+        if surface:
+            if self.image:
+                surface.blit(self.image, self.rect)
+            else:
+                pygame.draw.rect(surface, self.color, self.rect)
         else:
-            pygame.draw.rect(self.screen, self.color, self.rect)
+            if self.image:
+                self.screen.blit(self.image, self.rect)
+            else:
+                pygame.draw.rect(self.screen, self.color, self.rect)
 
 
 class SegmentedButton(UIObject):
@@ -44,6 +50,9 @@ class SegmentedButton(UIObject):
         self.x = x
         self.tile_width = images[0].get_width()
         self.tile_height = images[0].get_height()
+
+        # ----> Work here: Make so that every button is attached to the seg button
+        # Do it by putting all the buttons to be drawn in a seg button Surface
 
         for count, image in enumerate(self.images):
             button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, id=count)

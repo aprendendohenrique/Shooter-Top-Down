@@ -48,7 +48,7 @@ class LevelEditor:
             self.draw_lines()
 
         self.seg_button.draw_me()
-        self.button.draw_me()
+        # self.button.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
