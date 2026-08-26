@@ -1,3 +1,5 @@
+from argparse import ArgumentError
+
 import pygame
 
 class UIObject:
@@ -11,16 +13,15 @@ class UIObject:
 
     def center(self):
         try:
-            ...
-            # make the centering
-            x = (self.objects[-1].rect.x - self.objects[0].rect.x) / 2
-            print(x)
+            fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
+            x = self.spacing
 
             for obj in self.objects:
-                obj.rect.x = (self.screen.get_width() / 2) - x
+                obj.rect.x = (self.screen.get_width() / 2) - fixed_x
+                obj.rect.x += x
                 obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
-                x -= self.spacing
-                print(x)
+
+                x += self.spacing
         except AttributeError:
             self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
             self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2
@@ -28,17 +29,44 @@ class UIObject:
             return self
 
     def down(self):
-        self.rect.y = self.screen.get_height() - self.rect.height
-        return self
+        try:
+            for obj in self.objects:
+                obj.rect.y = self.screen.get_height() - obj.rect.height
+        except AttributeError:
+            self.rect.y = self.screen.get_height() - self.rect.height
+        else:
+            return self
 
     def up(self):
-        self.rect.y = 0
-        return self
+        try:
+            for obj in self.objects:
+                obj.rect.y = 0
+        except AttributeError:
+            self.rect.y = 0
+        else:
+            return self
 
     def left(self):
-        self.rect.x = 0
-        return self
+        try:
+            x = 0
+
+            for obj in self.objects:
+                obj.rect.x = x
+                x += self.spacing
+        except AttributeError:
+            self.rect.x = 0
+        else:
+            return self
 
     def right(self):
-        self.rect.x = self.screen.get_width()
-        return self
+        try:
+            size = (self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x
+            x = 0
+
+            for obj in self.objects:
+                obj.rect.x = self.screen.get_width() - size + x
+                x += self.spacing
+        except AttributeError:
+            self.rect.x = self.screen.get_width() - self.rect.width
+        else:
+            return self
