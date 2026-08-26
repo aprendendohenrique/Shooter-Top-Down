@@ -14,7 +14,7 @@ class UIObject:
     def center(self):
         try:
             fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
-            x = self.spacing
+            x = 0
 
             for obj in self.objects:
                 obj.rect.x = (self.screen.get_width() / 2) - fixed_x
