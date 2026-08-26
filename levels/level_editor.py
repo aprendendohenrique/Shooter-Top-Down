@@ -30,8 +30,8 @@ class LevelEditor:
         self.button = Button(self, 420, 430, 32, 32, image=self.grass_tileset[0])
         self.button.center()
 
-        self.seg_button = SegmentedButton(self, 200, 430, 5, images=self.grass_tileset)
-        self.seg_button.center()
+        self.seg_button = SegmentedButton(self, 0, 430, 5, images=self.grass_tileset)
+        self.seg_button.center_x()
 
     def run(self):
         """The main loop that runs the Level Editor"""

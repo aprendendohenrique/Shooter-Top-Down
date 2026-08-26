@@ -28,6 +28,30 @@ class UIObject:
         else:
             return self
 
+    def center_x(self):
+        try:
+            fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
+            x = 0
+
+            for obj in self.objects:
+                obj.rect.x = (self.screen.get_width() / 2) - fixed_x
+                obj.rect.x += x
+
+                x += self.spacing
+        except AttributeError:
+            self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
+        else:
+            return self
+
+    def center_y(self):
+        try:
+            for obj in self.objects:
+                obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
+        except AttributeError:
+            self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2
+        else:
+            return self
+
     def down(self):
         try:
             for obj in self.objects:
