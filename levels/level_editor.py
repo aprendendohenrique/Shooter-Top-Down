@@ -99,13 +99,16 @@ class LevelEditor:
             print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
             if self.tile is not None:
-                tile = Tile(self, x, y, self.tile)
+                tile = Tile(self, self.settings.x_offset + x_grid * self.settings.TILE_SIZE, self.settings.y_offset + y_grid * self.settings.TILE_SIZE, self.tile)
                 self.tiles.add(tile)
 
         # Seg button clicking
         button_id = self.seg_button.clicked()
         if button_id is not None:
-            self.tile = self.seg_button.images[button_id]
+            if self.tile != self.seg_button.images[button_id]:
+                self.tile = self.seg_button.images[button_id]
+            else:
+                self.tile = None
 
     def draw_lines(self):
         width = self.screen.get_width()
