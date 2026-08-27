@@ -1,10 +1,10 @@
-from argparse import ArgumentError
-
+from pygame.sprite import Sprite
 import pygame
 
-class UIObject:
+class UIObject(Sprite):
 
     def __init__(self, le_editor, x, y, width=0, height=0):
+        super().__init__()
         self.le_editor = le_editor
         self.screen = le_editor.screen
         self.screen_rect = le_editor.screen_rect
@@ -94,3 +94,13 @@ class UIObject:
             self.rect.x = self.screen.get_width() - self.rect.width
         else:
             return self
+        
+
+class Tile(UIObject):
+    
+    def __init__(self, le_editor, x, y, image):
+        super().__init__(le_editor, x, y)
+        self.image = image
+
+    def draw_me(self):
+        self.screen.blit(self.image, self.rect)

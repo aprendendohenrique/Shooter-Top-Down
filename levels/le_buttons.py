@@ -65,7 +65,6 @@ class SegmentedButton(UIObject):
         for button in self.objects:
             clk = button.clicked()
             if clk:
-                print(clk.id)
                 return clk.id
         return None
 
