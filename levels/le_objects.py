@@ -101,6 +101,13 @@ class Tile(UIObject):
     def __init__(self, le_editor, x, y, image):
         super().__init__(le_editor, x, y)
         self.image = image
+        self.rect.width = self.image.get_width()
+        self.rect.height = self.image.get_height()
 
     def draw_me(self):
         self.screen.blit(self.image, self.rect)
+
+    def clicked(self, destroy=False):
+        x, y = pygame.mouse.get_pos()
+        if self.rect.collidepoint(x, y):
+            self.kill()

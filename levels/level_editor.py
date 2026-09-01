@@ -86,6 +86,14 @@ class LevelEditor:
 
     def _mouse_down_events(self):
         x, y = pygame.mouse.get_pos()
+
+        # Grid clicked
+        self._grid_clicked(x, y)
+
+        # Asset seg button clicked
+        self._asset_clicked()
+
+    def _grid_clicked(self, x, y):
         cor_x = x - self.settings.x_offset
         cor_y = y - self.settings.y_offset
 
@@ -99,10 +107,19 @@ class LevelEditor:
             print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
             if self.tile is not None:
-                tile = Tile(self, self.settings.x_offset + x_grid * self.settings.TILE_SIZE, self.settings.y_offset + y_grid * self.settings.TILE_SIZE, self.tile)
-                self.tiles.add(tile)
+                # If any tile, replace the tile
+                if self.tiles:
+                    for tile in self.tiles:
+                        tile.clicked(destroy=True)
 
-        # Seg button clicking
+                tile = Tile(self, self.settings.x_offset + x_grid * self.settings.TILE_SIZE,
+                            self.settings.y_offset + y_grid * self.settings.TILE_SIZE, self.tile)
+                self.tiles.add(tile)
+            else:
+                for tile in self.tiles:
+                    tile.clicked(destroy=True)
+
+    def _asset_clicked(self):
         button_id = self.seg_button.clicked()
         if button_id is not None:
             if self.tile != self.seg_button.images[button_id]:
