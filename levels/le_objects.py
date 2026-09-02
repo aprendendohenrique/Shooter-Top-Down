@@ -3,13 +3,26 @@ import pygame
 
 class UIObject(Sprite):
 
-    def __init__(self, le_editor, x, y, width=0, height=0):
+    def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None):
         super().__init__()
         self.le_editor = le_editor
         self.screen = le_editor.screen
         self.screen_rect = le_editor.screen_rect
 
+        self.color = color
+        self.image = image
         self.rect = pygame.Rect(x, y, width, height)
+
+        if self.image:
+            self.rect.width = self.image.get_width()
+            self.rect.height = self.image.get_height()
+
+    def draw_me(self):
+        if self.image:
+            self.screen.blit(self.image, self.rect)
+        else:
+            pygame.draw.rect(self.screen, self.color, self.rect)
+
 
     def center(self):
         try:

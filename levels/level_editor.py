@@ -8,6 +8,7 @@ from le_buttons import Button
 from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetReader
 from le_objects import Tile
+from levels.le_objects import UIObject
 
 
 class LevelEditor:
@@ -28,11 +29,16 @@ class LevelEditor:
 
         self.show_grid = True
 
+        self.tile = None
+        self.tiles = pygame.sprite.Group()
+
+        # UI Objects
         self.seg_button = SegmentedButton(self, 0, 430, 5, images=self.grass_tileset)
         self.seg_button.center_x()
 
-        self.tile = None
-        self.tiles = pygame.sprite.Group()
+        cover_color = (220, 220, 220)
+        self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color)
+        self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=cover_color)
 
     def run(self):
         """The main loop that runs the Level Editor"""
@@ -49,10 +55,13 @@ class LevelEditor:
         if self.show_grid:
             self.draw_lines()
 
-        self.seg_button.draw_me()
-
+        # UIObjects
         for tile in self.tiles:
             tile.draw_me()
+
+        self.seg_button.draw_me()
+        self.upper_cover.draw_me()
+        self.left_cover.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
@@ -91,23 +100,24 @@ class LevelEditor:
         self._asset_clicked()
 
     def _grid_clicked(self, x, y):
-        if (x > -self.settings.grid_size and y > -self.settings.grid_size) and (x < self.screen_rect.width + self.settings.grid_size and y < self.screen_rect.height + self.settings.grid_size):
-            x_grid = x // 32
-            y_grid = y // 32
+        if not self.left_cover.rect.collidepoint(x, y) and not self.upper_cover.rect.collidepoint(x, y):
+            if (x > -self.settings.grid_size and y > -self.settings.grid_size) and (x < self.screen_rect.width + self.settings.grid_size and y < self.screen_rect.height + self.settings.grid_size):
+                x_grid = x // 32
+                y_grid = y // 32
 
-            print(f"x: {x_grid + 1} y: {y_grid + 1}")
+                print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
-            if self.tile is not None:
-                # If any tile, replace the tile
-                if self.tiles:
+                if self.tile is not None:
+                    # If any tile, replace the tile
+                    if self.tiles:
+                        for tile in self.tiles:
+                            tile.clicked(destroy=True)
+
+                    tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
+                    self.tiles.add(tile)
+                else:
                     for tile in self.tiles:
                         tile.clicked(destroy=True)
-
-                tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
-                self.tiles.add(tile)
-            else:
-                for tile in self.tiles:
-                    tile.clicked(destroy=True)
 
     def _asset_clicked(self):
         button_id = self.seg_button.clicked()
