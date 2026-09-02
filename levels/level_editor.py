@@ -33,8 +33,8 @@ class LevelEditor:
         self.tiles = pygame.sprite.Group()
 
         # UI Objects
-        self.seg_button = SegmentedButton(self, 0, 430, 5, images=self.grass_tileset)
-        self.seg_button.center_x()
+        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.grass_tileset, vertical=True)
+        self.seg_button.center_y()
 
         cover_color = (220, 220, 220)
         self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color)
@@ -59,9 +59,9 @@ class LevelEditor:
         for tile in self.tiles:
             tile.draw_me()
 
-        self.seg_button.draw_me()
         self.upper_cover.draw_me()
         self.left_cover.draw_me()
+        self.seg_button.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))

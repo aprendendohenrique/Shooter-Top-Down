@@ -26,15 +26,26 @@ class UIObject(Sprite):
 
     def center(self):
         try:
-            fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
-            x = 0
+            if self.vertical:
+                fixed_y = ((self.objects[-1].rect.y + self.objects[-1].rect.height) - self.objects[0].rect.y) / 2
+                y = 0
 
-            for obj in self.objects:
-                obj.rect.x = (self.screen.get_width() / 2) - fixed_x
-                obj.rect.x += x
-                obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
+                for obj in self.objects:
+                    obj.rect.y = (self.screen.get_height() / 2) - fixed_y
+                    obj.rect.y += y
+                    obj.rect.x = (self.screen.get_width() / 2) - obj.rect.width / 2
 
-                x += self.spacing
+                    y += self.spacing
+            else:
+                fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
+                x = 0
+
+                for obj in self.objects:
+                    obj.rect.x = (self.screen.get_width() / 2) - fixed_x
+                    obj.rect.x += x
+                    obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
+
+                    x += self.spacing
         except AttributeError:
             self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
             self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2
@@ -43,14 +54,18 @@ class UIObject(Sprite):
 
     def center_x(self):
         try:
-            fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
-            x = 0
+            if self.vertical:
+                for obj in self.objects:
+                    obj.rect.x = (self.screen.get_width() / 2) - obj.rect.width / 2
+            else:
+                fixed_x = ((self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x) / 2
+                x = 0
 
-            for obj in self.objects:
-                obj.rect.x = (self.screen.get_width() / 2) - fixed_x
-                obj.rect.x += x
+                for obj in self.objects:
+                    obj.rect.x = (self.screen.get_width() / 2) - fixed_x
+                    obj.rect.x += x
 
-                x += self.spacing
+                    x += self.spacing
         except AttributeError:
             self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
         else:
@@ -58,8 +73,18 @@ class UIObject(Sprite):
 
     def center_y(self):
         try:
-            for obj in self.objects:
-                obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
+            if self.vertical:
+                fixed_y = ((self.objects[-1].rect.y + self.objects[-1].rect.height) - self.objects[0].rect.y) / 2
+                y = 0
+
+                for obj in self.objects:
+                    obj.rect.y = (self.screen.get_height() / 2) - fixed_y
+                    obj.rect.y += y
+
+                    y += self.spacing
+            else:
+                for obj in self.objects:
+                    obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
         except AttributeError:
             self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2
         else:
@@ -67,8 +92,16 @@ class UIObject(Sprite):
 
     def down(self):
         try:
-            for obj in self.objects:
-                obj.rect.y = self.screen.get_height() - obj.rect.height
+            if self.vertical:
+                size = (self.objects[-1].rect.y + self.objects[-1].rect.height) - self.objects[0].rect.y
+                y = 0
+
+                for obj in self.objects:
+                    obj.rect.y = self.screen.get_height() - size + y
+                    y += self.spacing
+            else:
+                for obj in self.objects:
+                    obj.rect.y = self.screen.get_height() - obj.rect.height
         except AttributeError:
             self.rect.y = self.screen.get_height() - self.rect.height
         else:
@@ -76,8 +109,15 @@ class UIObject(Sprite):
 
     def up(self):
         try:
-            for obj in self.objects:
-                obj.rect.y = 0
+            if self.vertical:
+                y = 0
+
+                for obj in self.objects:
+                    obj.rect.y = y
+                    y += self.spacing
+            else:
+                for obj in self.objects:
+                    obj.rect.y = 0
         except AttributeError:
             self.rect.y = 0
         else:
@@ -85,11 +125,15 @@ class UIObject(Sprite):
 
     def left(self):
         try:
-            x = 0
+            if self.vertical:
+                for obj in self.objects:
+                    obj.rect.x = 0
+            else:
+                x = 0
 
-            for obj in self.objects:
-                obj.rect.x = x
-                x += self.spacing
+                for obj in self.objects:
+                    obj.rect.x = x
+                    x += self.spacing
         except AttributeError:
             self.rect.x = 0
         else:
@@ -97,12 +141,16 @@ class UIObject(Sprite):
 
     def right(self):
         try:
-            size = (self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x
-            x = 0
+            if self.vertical:
+                for obj in self.objects:
+                    obj.rect.x = self.screen.get_width() - obj.rect.width
+            else:
+                size = (self.objects[-1].rect.x + self.objects[-1].rect.width) - self.objects[0].rect.x
+                x = 0
 
-            for obj in self.objects:
-                obj.rect.x = self.screen.get_width() - size + x
-                x += self.spacing
+                for obj in self.objects:
+                    obj.rect.x = self.screen.get_width() - size + x
+                    x += self.spacing
         except AttributeError:
             self.rect.x = self.screen.get_width() - self.rect.width
         else:
