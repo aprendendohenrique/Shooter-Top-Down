@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -30,7 +31,11 @@ class LevelEditor:
         self.show_grid = True
 
         self.tile = None
+        self.tile_id = None
         self.tiles = pygame.sprite.Group()
+
+        #Save
+        self.save = [{"grass_tileset": []}]
 
         # UI Objects
         self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.grass_tileset, vertical=True)
@@ -115,6 +120,8 @@ class LevelEditor:
 
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
+
+                    self.save[0]["grass_tileset"].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
                 else:
                     for tile in self.tiles:
                         tile.clicked(destroy=True)
@@ -124,6 +131,7 @@ class LevelEditor:
         if button_id is not None:
             if self.tile != self.seg_button.images[button_id]:
                 self.tile = self.seg_button.images[button_id]
+                self.tile_id = button_id
             else:
                 self.tile = None
 
