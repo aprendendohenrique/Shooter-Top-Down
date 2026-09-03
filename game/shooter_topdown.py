@@ -2,6 +2,7 @@ import sys
 import random
 
 import pygame
+from pathlib import Path
 
 from settings import Settings
 from Scenario.scenario import Scenario
@@ -26,6 +27,7 @@ class ShooterTopdown:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
         self.screen_rect = self.screen.get_rect()
+        self.BASE_DIR = Path(__file__).resolve().parent.parent
 
         # Game Over
         self.is_game_over = True
@@ -69,6 +71,7 @@ class ShooterTopdown:
 
         # Scenario
         self.scenario = Scenario(self)
+        self.ASSETS_DIR = self.BASE_DIR / "levels" / "images" / "assets"
 
     def run_game(self):
         while True:

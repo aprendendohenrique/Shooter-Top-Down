@@ -78,6 +78,7 @@ class LevelEditor:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self._save_things()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._key_down_events(event)
@@ -88,12 +89,17 @@ class LevelEditor:
         """Handles every KeyBoard Down events"""
 
         if event.key == pygame.K_q:
+            self._save_things()
             sys.exit()
         elif event.key == pygame.K_g:
             if self.show_grid:
                 self.show_grid = False
             else:
                 self.show_grid = True
+
+    def _save_things(self):
+        with open("save.json", "w") as file:
+            json.dump(self.save, file, indent=4)
 
     def _mouse_down_events(self):
         x, y = pygame.mouse.get_pos()
