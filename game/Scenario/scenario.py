@@ -13,6 +13,7 @@ class Scenario:
         self.st_game = st_game
         self.screen = st_game.screen
         self.screen_rect = st_game.screen_rect
+        self.settings = st_game.settings
 
         # Tilesets
         self.grass_tileset = TileSetReader(self, st_game.ASSETS_DIR / "grass_tileset.png", 32, 32)

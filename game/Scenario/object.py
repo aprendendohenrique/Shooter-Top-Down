@@ -17,7 +17,7 @@ class Object(Sprite):
 
     def drawme(self):
         if self.image:
-            self.screen.blit(self.image, (self.rect.x - self.st_game.screen_x, self.rect.y - self.st_game.screen_y))
+            self.screen.blit(self.image, ((self.rect.x * 2) - self.st_game.screen_x, (self.rect.y * 2) - self.st_game.screen_y))
         else:
             pygame.draw.rect(
                 self.screen,
