@@ -172,3 +172,8 @@ class Tile(UIObject):
         x, y = pygame.mouse.get_pos()
         if self.rect.collidepoint(x, y):
             self.kill()
+
+class CameraObject(UIObject):
+
+    def __init__(self, le_editor, x, y, width, height, color):
+        super().__init__(le_editor, x, y, width, height, color)

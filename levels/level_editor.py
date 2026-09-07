@@ -6,6 +6,7 @@ import pygame
 
 from le_settings import LESettings
 from le_buttons import Button
+from le_objects import CameraObject
 from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetReader
 from le_objects import Tile
@@ -36,6 +37,10 @@ class LevelEditor:
 
         self.left_mouse_button_down = False
         self.right_mouse_button_down = False
+
+        # Camera
+        self.camera_object = CameraObject(self, 0, 0, 32, 32, "red")
+        self.camera_object.center()
 
         #Save
         self.save = [{"grass_tileset": []}]
@@ -71,6 +76,8 @@ class LevelEditor:
         self.upper_cover.draw_me()
         self.left_cover.draw_me()
         self.seg_button.draw_me()
+
+        self.camera_object.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
