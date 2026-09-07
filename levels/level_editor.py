@@ -34,7 +34,7 @@ class LevelEditor:
         self.tile_id = None
         self.tiles = pygame.sprite.Group()
 
-        self.mouse_down = False
+        self.left_mouse_button_down = False
 
         #Save
         self.save = [{"grass_tileset": []}]
@@ -86,10 +86,13 @@ class LevelEditor:
             elif event.type == pygame.KEYDOWN:
                 self._key_down_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.mouse_down = True
-                self._mouse_down_events()
+                # Checking if the left mouse button is being clicked
+                if pygame.mouse.get_pressed(num_buttons=3)[0]:
+                    self.left_mouse_button_down = True
+                    self._left_mouse_down_events()
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.mouse_down = False
+                if not pygame.mouse.get_pressed(num_buttons=3)[0]:
+                    self.left_mouse_button_down = False
 
     def _key_down_events(self, event):
         """Handles every KeyBoard Down events"""
@@ -108,13 +111,13 @@ class LevelEditor:
             json.dump(self.save, file, indent=4)
 
     def _mouse_events(self):
-        if self.mouse_down:
+        if self.left_mouse_button_down:
             x, y = pygame.mouse.get_pos()
 
             # Grid clicked
             self._grid_clicked(x, y)
 
-    def _mouse_down_events(self):
+    def _left_mouse_down_events(self):
         # Asset seg button clicked
         self._asset_clicked()
 
