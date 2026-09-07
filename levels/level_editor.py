@@ -35,6 +35,7 @@ class LevelEditor:
         self.tiles = pygame.sprite.Group()
 
         self.left_mouse_button_down = False
+        self.right_mouse_button_down = False
 
         #Save
         self.save = [{"grass_tileset": []}]
@@ -90,9 +91,14 @@ class LevelEditor:
                 if pygame.mouse.get_pressed(num_buttons=3)[0]:
                     self.left_mouse_button_down = True
                     self._left_mouse_down_events()
+                elif pygame.mouse.get_pressed(num_buttons=3)[2]:
+                    self.right_mouse_button_down = True
             elif event.type == pygame.MOUSEBUTTONUP:
                 if not pygame.mouse.get_pressed(num_buttons=3)[0]:
                     self.left_mouse_button_down = False
+                if not pygame.mouse.get_pressed(num_buttons=3)[2]:
+                    self.right_mouse_button_down = False
+                    self._right_mouse_up_events()
 
     def _key_down_events(self, event):
         """Handles every KeyBoard Down events"""
@@ -116,10 +122,15 @@ class LevelEditor:
 
             # Grid clicked
             self._grid_clicked(x, y)
+        elif self.right_mouse_button_down:
+            pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND))
 
     def _left_mouse_down_events(self):
         # Asset seg button clicked
         self._asset_clicked()
+
+    def _right_mouse_up_events(self):
+        pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW))
 
     def _grid_clicked(self, x, y):
         if not self.left_cover.rect.collidepoint(x, y) and not self.upper_cover.rect.collidepoint(x, y):
