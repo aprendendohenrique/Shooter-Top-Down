@@ -40,7 +40,7 @@ class LevelEditor:
 
         # Camera
         self.camera_object = CameraObject(self, 0, 0, 32, 32, "red")
-        self.camera_object.center()
+        self.camera_object.center().move_me(10, 10)
 
         #Save
         self.save = [{"grass_tileset": []}]

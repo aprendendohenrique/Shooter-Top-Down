@@ -49,7 +49,7 @@ class UIObject(Sprite):
         except AttributeError:
             self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
             self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2
-        else:
+        finally:
             return self
 
     def center_x(self):
@@ -68,7 +68,7 @@ class UIObject(Sprite):
                     x += self.spacing
         except AttributeError:
             self.rect.x = (self.screen.get_width() / 2) - self.rect.width / 2
-        else:
+        finally:
             return self
 
     def center_y(self):
@@ -87,7 +87,7 @@ class UIObject(Sprite):
                     obj.rect.y = (self.screen.get_height() / 2) - obj.rect.height / 2
         except AttributeError:
             self.rect.y = (self.screen.get_height() / 2) - self.rect.height / 2
-        else:
+        finally:
             return self
 
     def down(self):
@@ -104,7 +104,7 @@ class UIObject(Sprite):
                     obj.rect.y = self.screen.get_height() - obj.rect.height
         except AttributeError:
             self.rect.y = self.screen.get_height() - self.rect.height
-        else:
+        finally:
             return self
 
     def up(self):
@@ -120,7 +120,7 @@ class UIObject(Sprite):
                     obj.rect.y = 0
         except AttributeError:
             self.rect.y = 0
-        else:
+        finally:
             return self
 
     def left(self):
@@ -136,7 +136,7 @@ class UIObject(Sprite):
                     x += self.spacing
         except AttributeError:
             self.rect.x = 0
-        else:
+        finally:
             return self
 
     def right(self):
@@ -153,7 +153,7 @@ class UIObject(Sprite):
                     x += self.spacing
         except AttributeError:
             self.rect.x = self.screen.get_width() - self.rect.width
-        else:
+        finally:
             return self
         
 
@@ -177,3 +177,8 @@ class CameraObject(UIObject):
 
     def __init__(self, le_editor, x, y, width, height, color):
         super().__init__(le_editor, x, y, width, height, color)
+
+    def move_me(self, x ,y):
+        self.rect.x += x
+        self.rect.y += y
+        return(self)
