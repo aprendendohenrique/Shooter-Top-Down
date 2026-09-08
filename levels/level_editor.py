@@ -39,8 +39,8 @@ class LevelEditor:
         self.right_mouse_button_down = False
 
         # Camera
-        self.camera_object = CameraObject(self, 0, 0, 32, 32, "red")
-        self.camera_object.center().move_me(10, 10)
+        self.camera_object = CameraObject(self, 0, 0, 32, 32, "red").center()
+        self.last_mouse_position = [0, 0]
 
         #Save
         self.save = [{"grass_tileset": []}]
@@ -124,19 +124,28 @@ class LevelEditor:
             json.dump(self.save, file, indent=4)
 
     def _mouse_events(self):
-        if self.left_mouse_button_down:
-            x, y = pygame.mouse.get_pos()
+        x, y = pygame.mouse.get_pos()
 
+        if self.right_mouse_button_down:
+            # Change the cursor to the hand
+            pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND))
+
+            distance_x = self.last_mouse_position[0] - x
+            distance_y = self.last_mouse_position[1] - y
+
+            self.camera_object.move_me(distance_x, distance_y)
+        elif self.left_mouse_button_down:
             # Grid clicked
             self._grid_clicked(x, y)
-        elif self.right_mouse_button_down:
-            pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND))
+
+        self.last_mouse_position = [x, y]
 
     def _left_mouse_down_events(self):
         # Asset seg button clicked
         self._asset_clicked()
 
     def _right_mouse_up_events(self):
+        # Change the cursor back to the arrow
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW))
 
     def _grid_clicked(self, x, y):
