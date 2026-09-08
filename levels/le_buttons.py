@@ -4,9 +4,9 @@ from le_objects import UIObject
 
 class Button(UIObject):
 
-    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0), image=None, command=None, id=None):
+    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0), image=None, command=None, id=None, lock_pos=False):
         """Base class for all buttons"""
-        super().__init__(le_editor, x, y, width, height)
+        super().__init__(le_editor, x, y, width, height, lock_pos=lock_pos)
 
         self.command = command
         self.id = id
@@ -40,9 +40,9 @@ class Button(UIObject):
 
 class SegmentedButton(UIObject):
 
-    def __init__(self, le_editor, x, y, spacing, color=(0, 0, 0), images=None, vertical=False):
+    def __init__(self, le_editor, x, y, spacing, color=(0, 0, 0), images=None, vertical=False, lock_pos=False):
         """Class that creates many buttons that only one can be selected."""
-        super().__init__(le_editor, x, y)
+        super().__init__(le_editor, x, y, lock_pos=lock_pos)
 
         self.images = images
         self.vertical = vertical

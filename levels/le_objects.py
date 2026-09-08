@@ -3,12 +3,13 @@ import pygame
 
 class UIObject(Sprite):
 
-    def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None):
+    def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None, lock_pos=False):
         super().__init__()
         self.le_editor = le_editor
         self.screen = le_editor.screen
         self.screen_rect = le_editor.screen_rect
 
+        self.lock_pos = lock_pos
         self.color = color
         self.image = image
         self.rect = pygame.Rect(x, y, width, height)
@@ -19,10 +20,21 @@ class UIObject(Sprite):
 
     def draw_me(self):
         if self.image:
-            self.screen.blit(self.image, self.rect)
-        else:
-            pygame.draw.rect(self.screen, self.color, self.rect)
+            if self.lock_pos:
+                self.screen.blit(self.image, self.rect)
+            else:
+                self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
+        elif self.color:
+            if self.lock_pos:
+                pygame.draw.rect(self.screen, self.color, self.rect)
+            else:
+                pygame.draw.rect(self.screen, self.color,
+                                 self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
 
+    def move_me(self, x ,y):
+        self.rect.x += x
+        self.rect.y += y
+        return(self)
 
     def center(self):
         try:
@@ -161,24 +173,16 @@ class Tile(UIObject):
     
     def __init__(self, le_editor, x, y, image):
         super().__init__(le_editor, x, y)
+        self.le_editor = le_editor
         self.image = image
         self.rect.width = self.image.get_width()
         self.rect.height = self.image.get_height()
 
     def draw_me(self):
-        self.screen.blit(self.image, self.rect)
+        self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
 
     def clicked(self, destroy=False):
         x, y = pygame.mouse.get_pos()
+        x, y = x + self.le_editor.screen_x, y + self.le_editor.screen_y
         if self.rect.collidepoint(x, y):
             self.kill()
-
-class CameraObject(UIObject):
-
-    def __init__(self, le_editor, x, y, width, height, color):
-        super().__init__(le_editor, x, y, width, height, color)
-
-    def move_me(self, x ,y):
-        self.rect.x += x
-        self.rect.y += y
-        return(self)

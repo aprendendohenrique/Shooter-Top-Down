@@ -6,7 +6,6 @@ import pygame
 
 from le_settings import LESettings
 from le_buttons import Button
-from le_objects import CameraObject
 from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetReader
 from le_objects import Tile
@@ -39,19 +38,21 @@ class LevelEditor:
         self.right_mouse_button_down = False
 
         # Camera
-        self.camera_object = CameraObject(self, 0, 0, 32, 32, "red").center()
+        self.camera_object = UIObject(self, 0, 0, 32, 32).center()
         self.last_mouse_position = [0, 0]
+        self.screen_x = 0
+        self.screen_y = 0
 
         #Save
         self.save = [{"grass_tileset": []}]
 
         # UI Objects
-        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.grass_tileset, vertical=True)
+        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.grass_tileset, vertical=True, lock_pos=True)
         self.seg_button.center_y()
 
         cover_color = (220, 220, 220)
-        self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color)
-        self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=cover_color)
+        self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color, lock_pos=True)
+        self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=cover_color, lock_pos=True)
 
     def run(self):
         """The main loop that runs the Level Editor"""
@@ -59,6 +60,8 @@ class LevelEditor:
         while True:
             self.check_events()
             self._mouse_events()
+
+            self._camera()
 
             self._update_screen()
             self.clock.tick(self.settings.fps)
@@ -83,6 +86,10 @@ class LevelEditor:
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
 
         pygame.display.flip()
+
+    def _camera(self):
+        self.screen_x = (self.camera_object.rect.x + self.camera_object.rect.width / 2) - self.screen_rect.width // 2
+        self.screen_y = (self.camera_object.rect.y + self.camera_object.rect.height / 2) - self.screen_rect.height // 2
 
     def check_events(self):
         """Handles every event"""
@@ -136,7 +143,7 @@ class LevelEditor:
             self.camera_object.move_me(distance_x, distance_y)
         elif self.left_mouse_button_down:
             # Grid clicked
-            self._grid_clicked(x, y)
+            self._grid_clicked(x + self.screen_x, y + self.screen_y)
 
         self.last_mouse_position = [x, y]
 
@@ -184,10 +191,10 @@ class LevelEditor:
         height = self.screen.get_height()
 
         for x in range(0 - self.settings.grid_size, width + self.settings.grid_size, self.settings.TILE_SIZE):
-            pygame.draw.line(self.screen, "black", start_pos=(x, -self.settings.grid_size), end_pos=(x, height + self.settings.grid_size), width=self.settings.grid_width)
+            pygame.draw.line(self.screen, "black", start_pos=(x - self.screen_x, -self.settings.grid_size - self.screen_y), end_pos=(x - self.screen_x, height + self.settings.grid_size - self.screen_y), width=self.settings.grid_width)
 
         for y in range(0 - self.settings.grid_size, height + self.settings.grid_size, self.settings.TILE_SIZE):
-            pygame.draw.line(self.screen, "black", start_pos=(-self.settings.grid_size, y), end_pos=(width + self.settings.grid_size, y), width=self.settings.grid_width)
+            pygame.draw.line(self.screen, "black", start_pos=(-self.settings.grid_size - self.screen_x, y - self.screen_y), end_pos=(width + self.settings.grid_size - self.screen_x, y - self.screen_y), width=self.settings.grid_width)
 
 if __name__ == '__main__':
     le = LevelEditor()
