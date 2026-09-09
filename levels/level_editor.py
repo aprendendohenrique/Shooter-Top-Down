@@ -9,6 +9,7 @@ from le_buttons import Button
 from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetReader
 from le_objects import Tile
+from le_objects import CameraObject
 from levels.le_objects import UIObject
 
 
@@ -38,7 +39,7 @@ class LevelEditor:
         self.right_mouse_button_down = False
 
         # Camera
-        self.camera_object = UIObject(self, 0, 0, 32, 32).center()
+        self.camera_object = CameraObject(self, 0, 0, 32, 32).center()
         self.last_mouse_position = [0, 0]
         self.screen_x = 0
         self.screen_y = 0
@@ -143,7 +144,7 @@ class LevelEditor:
             self.camera_object.move_me(distance_x, distance_y)
         elif self.left_mouse_button_down:
             # Grid clicked
-            self._grid_clicked(x + self.screen_x, y + self.screen_y)
+            self._grid_clicked(x + self.screen_x, y + self.screen_y, x, y)
 
         self.last_mouse_position = [x, y]
 
@@ -155,8 +156,8 @@ class LevelEditor:
         # Change the cursor back to the arrow
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW))
 
-    def _grid_clicked(self, x, y):
-        if not self.left_cover.rect.collidepoint(x, y) and not self.upper_cover.rect.collidepoint(x, y):
+    def _grid_clicked(self, x, y, fixed_x, fixed_y):
+        if not self.left_cover.rect.collidepoint(fixed_x, fixed_y) and not self.upper_cover.rect.collidepoint(fixed_x, fixed_y):
             if (x > -self.settings.grid_size and y > -self.settings.grid_size) and (x < self.screen_rect.width + self.settings.grid_size and y < self.screen_rect.height + self.settings.grid_size):
                 x_grid = x // 32
                 y_grid = y // 32

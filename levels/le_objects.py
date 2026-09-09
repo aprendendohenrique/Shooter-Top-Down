@@ -8,6 +8,7 @@ class UIObject(Sprite):
         self.le_editor = le_editor
         self.screen = le_editor.screen
         self.screen_rect = le_editor.screen_rect
+        self.settings = le_editor.settings
 
         self.lock_pos = lock_pos
         self.color = color
@@ -186,3 +187,25 @@ class Tile(UIObject):
         x, y = x + self.le_editor.screen_x, y + self.le_editor.screen_y
         if self.rect.collidepoint(x, y):
             self.kill()
+
+
+class CameraObject(UIObject):
+    
+    def __init__(self, le_editor, x, y, width=0, height=0):
+        super().__init__(le_editor, x, y, width, height)
+
+    def move_me(self, x, y):
+        self.rect.x += x
+        self.rect.y += y
+
+        if (self.rect.x + self.rect.width + self.screen_rect.width // 2) > (self.screen_rect.width + self.settings.grid_size):
+            self.rect.x = (self.screen_rect.width + self.settings.grid_size) - self.rect.width - self.screen_rect.width // 2
+        elif self.rect.x - self.screen_rect.width // 2 < -self.settings.grid_size:
+            self.rect.x = -self.settings.grid_size + self.screen_rect.width // 2
+
+        if (self.rect.y + self.rect.height + self.screen_rect.height // 2) > (self.screen_rect.height + self.settings.grid_size):
+            self.rect.y = (self.screen_rect.height + self.settings.grid_size) - self.rect.height - self.screen_rect.height // 2
+        elif self.rect.y - self.screen_rect.height // 2 < -self.settings.grid_size:
+            self.rect.y = -self.settings.grid_size + self.screen_rect.height // 2
+
+        return (self)
