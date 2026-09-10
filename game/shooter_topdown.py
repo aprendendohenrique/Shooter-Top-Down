@@ -70,7 +70,7 @@ class ShooterTopdown:
         self.enemies_classes = [Walker, Runner, Shooter]
 
         # Scenario
-        self.ASSETS_DIR = self.BASE_DIR / "levels" / "images" / "assets"
+        self.ASSETS_DIR = self.BASE_DIR / "levels" / "images" / "tilesets"
         self.scenario = Scenario(self)
 
     def run_game(self):

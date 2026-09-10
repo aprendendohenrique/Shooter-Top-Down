@@ -26,7 +26,7 @@ class LevelEditor:
         self.screen_rect = self.screen.get_rect()
 
         self.BASE_DIR = Path(__file__).resolve().parent
-        self.ASSETS_DIR = self.BASE_DIR / "images" / "assets"
+        self.ASSETS_DIR = self.BASE_DIR / "images" / "tilesets"
 
         self.tilesets = TileSetsReader(self, self.ASSETS_DIR, 32, 32)
         self.current_tileset = "grass_tileset.png"
