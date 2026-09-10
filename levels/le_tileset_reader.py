@@ -18,3 +18,12 @@ class TileSetReader:
 
         raise TypeError
 
+class TileSetsReader:
+
+    def __new__(cls, le_editor, dir_path, x_tile_size, y_tile_size):
+        tilesets = {}
+        
+        for tileset in dir_path.iterdir():
+            tilesets[tileset.name] = TileSetReader(le_editor, tileset, x_tile_size, y_tile_size)
+
+        return tilesets

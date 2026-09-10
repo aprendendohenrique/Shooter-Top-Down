@@ -8,6 +8,7 @@ from le_settings import LESettings
 from le_buttons import Button
 from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetReader
+from le_tileset_reader import TileSetsReader
 from le_objects import Tile
 from le_objects import CameraObject
 from levels.le_objects import UIObject
@@ -28,6 +29,7 @@ class LevelEditor:
         self.ASSETS_DIR = self.BASE_DIR / "images" / "assets"
 
         self.grass_tileset = TileSetReader(self, self.ASSETS_DIR / "grass_tileset.png", 32, 32)
+        self.try_tilesets = TileSetsReader(self, self.ASSETS_DIR, 32, 32)
 
         self.show_grid = True
 
