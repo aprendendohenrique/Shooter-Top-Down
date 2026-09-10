@@ -3,7 +3,7 @@ import json
 import pygame.sprite
 
 from game.Scenario.object import Object
-from levels.le_tileset_reader import TileSetReader
+from levels.le_tileset_reader import TileSetsReader
 
 
 class Scenario:
@@ -16,7 +16,7 @@ class Scenario:
         self.settings = st_game.settings
 
         # Tilesets
-        self.grass_tileset = TileSetReader(self, st_game.ASSETS_DIR / "grass_tileset.png", 32, 32)
+        self.tilesets = TileSetsReader(self, st_game.ASSETS_DIR, 32, 32)
 
         self.non_collideable_objects = pygame.sprite.Group()
         self.collideable_objects = pygame.sprite.Group()
@@ -32,7 +32,8 @@ class Scenario:
     def load_scenario(self):
         with open(self.st_game.BASE_DIR / "levels" / "save.json", "r") as file:
             scenario = json.load(file)
-        for obj in scenario[0]["grass_tileset"]:
-            tile = Object(self.st_game, self.grass_tileset[0].get_width(), self.grass_tileset[0].get_height(), obj["position"][0], obj["position"][1], image=self.grass_tileset[obj["tile_id"]])
-            self.non_collideable_objects.add(tile)
+        for tileset in self.tilesets:
+            for obj in scenario[tileset]:
+                tile = Object(self.st_game, self.tilesets[tileset][0].get_width(), self.tilesets[tileset][0].get_height(), obj["position"][0], obj["position"][1], image=self.tilesets[tileset][obj["tile_id"]])
+                self.non_collideable_objects.add(tile)
 

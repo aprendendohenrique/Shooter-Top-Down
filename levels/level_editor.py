@@ -28,8 +28,8 @@ class LevelEditor:
         self.BASE_DIR = Path(__file__).resolve().parent
         self.ASSETS_DIR = self.BASE_DIR / "images" / "assets"
 
-        self.grass_tileset = TileSetReader(self, self.ASSETS_DIR / "grass_tileset.png", 32, 32)
-        self.try_tilesets = TileSetsReader(self, self.ASSETS_DIR, 32, 32)
+        self.tilesets = TileSetsReader(self, self.ASSETS_DIR, 32, 32)
+        self.current_tileset = "grass_tileset.png"
 
         self.show_grid = True
 
@@ -47,10 +47,12 @@ class LevelEditor:
         self.screen_y = 0
 
         #Save
-        self.save = [{"grass_tileset": []}]
+        self.save = {}
+        for tileset in self.tilesets:
+            self.save[tileset] = []
 
         # UI Objects
-        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.grass_tileset, vertical=True, lock_pos=True)
+        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
         self.seg_button.center_y()
 
         cover_color = (220, 220, 220)
@@ -175,7 +177,7 @@ class LevelEditor:
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
 
-                    self.save[0]["grass_tileset"].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
+                    self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
                 else:
                     for tile in self.tiles:
                         tile.clicked(destroy=True)
