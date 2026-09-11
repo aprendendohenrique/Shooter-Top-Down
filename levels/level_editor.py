@@ -61,8 +61,10 @@ class LevelEditor:
         self.right_arrow_button = Button(self, 0, 0, 16, 16, image=rab_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
         self.right_arrow_button.center_y().move_me(52, -140)
 
-        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
-        self.seg_button.center_y().move_me(0, 40)
+        self.seg_button_x = 25
+        self.seg_button_y = 40
+        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
+        self.seg_button.center_y().move_me(0, self.seg_button_y)
 
         cover_color = (220, 220, 220)
         self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color, lock_pos=True)
@@ -214,7 +216,6 @@ class LevelEditor:
             pygame.draw.line(self.screen, "black", start_pos=(-self.settings.grid_size - self.screen_x, y - self.screen_y), end_pos=(width + self.settings.grid_size - self.screen_x, y - self.screen_y), width=self.settings.grid_width)
 
     def change_tileset(self, direction=1):
-        print("foi")
         tilesets = []
 
         for tileset in self.tilesets.keys():
@@ -226,8 +227,8 @@ class LevelEditor:
             self.current_tileset = tilesets[0]
 
         self.seg_button.kill()
-        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
-        self.seg_button.center_y().move_me(0, 40)
+        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
+        self.seg_button.center_y().move_me(0, self.seg_button_y)
 
 if __name__ == '__main__':
     le = LevelEditor()
