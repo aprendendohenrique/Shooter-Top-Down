@@ -54,11 +54,11 @@ class LevelEditor:
 
         # UI Objects
         lab_image = pygame.image.load(self.UI_DIR / "left_arrow.png")
-        self.left_arrow_button = Button(self, 0, 0, 16, 16, image=lab_image, scale=2, lock_pos=True)
+        self.left_arrow_button = Button(self, 0, 0, 16, 16, image=lab_image, scale=2, command=lambda: self.change_tileset(-1), lock_pos=True)
         self.left_arrow_button.center_y().move_me(-2, -140)
 
         rab_image = pygame.image.load(self.UI_DIR / "right_arrow.png")
-        self.right_arrow_button = Button(self, 0, 0, 16, 16, image=rab_image, scale=2, lock_pos=True)
+        self.right_arrow_button = Button(self, 0, 0, 16, 16, image=rab_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
         self.right_arrow_button.center_y().move_me(52, -140)
 
         self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
@@ -164,6 +164,8 @@ class LevelEditor:
 
     def _left_mouse_down_events(self):
         # Asset seg button clicked
+        self.left_arrow_button.clicked()
+        self.right_arrow_button.clicked()
         self._asset_clicked()
 
     def _right_mouse_up_events(self):
@@ -210,6 +212,22 @@ class LevelEditor:
 
         for y in range(0 - self.settings.grid_size, height + self.settings.grid_size, self.settings.TILE_SIZE):
             pygame.draw.line(self.screen, "black", start_pos=(-self.settings.grid_size - self.screen_x, y - self.screen_y), end_pos=(width + self.settings.grid_size - self.screen_x, y - self.screen_y), width=self.settings.grid_width)
+
+    def change_tileset(self, direction=1):
+        print("foi")
+        tilesets = []
+
+        for tileset in self.tilesets.keys():
+            tilesets.append(tileset)
+
+        try:
+            self.current_tileset = tilesets[tilesets.index(self.current_tileset) + direction]
+        except IndexError:
+            self.current_tileset = tilesets[0]
+
+        self.seg_button.kill()
+        self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
+        self.seg_button.center_y().move_me(0, 40)
 
 if __name__ == '__main__':
     le = LevelEditor()

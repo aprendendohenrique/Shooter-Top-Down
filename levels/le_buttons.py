@@ -18,6 +18,9 @@ class Button(UIObject):
             self.image = pygame.transform.scale_by(self.image, scale)
 
         self.rect = pygame.Rect(x, y, width, height)
+        if self.image:
+            self.rect.width = self.image.get_width()
+            self.rect.height = self.image.get_height()
 
     def clicked(self):
         x, y = pygame.mouse.get_pos()
