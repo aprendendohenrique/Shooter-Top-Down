@@ -4,7 +4,7 @@ from le_objects import UIObject
 
 class Button(UIObject):
 
-    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0), image=None, command=None, id=None, lock_pos=False):
+    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0), image=None, scale=1, command=None, id=None, lock_pos=False):
         """Base class for all buttons"""
         super().__init__(le_editor, x, y, width, height, lock_pos=lock_pos)
 
@@ -14,6 +14,8 @@ class Button(UIObject):
         self.color = color
 
         self.image = image
+        if scale != 1:
+            self.image = pygame.transform.scale_by(self.image, scale)
 
         self.rect = pygame.Rect(x, y, width, height)
 

@@ -33,9 +33,15 @@ class UIObject(Sprite):
                                  self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
 
     def move_me(self, x ,y):
-        self.rect.x += x
-        self.rect.y += y
-        return(self)
+        try:
+            for obj in self.objects:
+                obj.rect.x += x
+                obj.rect.y += y
+        except AttributeError:
+            self.rect.x += x
+            self.rect.y += y
+        finally:
+            return(self)
 
     def center(self):
         try:

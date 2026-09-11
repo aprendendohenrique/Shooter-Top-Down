@@ -26,9 +26,10 @@ class LevelEditor:
         self.screen_rect = self.screen.get_rect()
 
         self.BASE_DIR = Path(__file__).resolve().parent
-        self.ASSETS_DIR = self.BASE_DIR / "images" / "tilesets"
+        self.TILESETS_DIR = self.BASE_DIR / "images" / "tilesets"
+        self.UI_DIR = self.BASE_DIR / "images" / "UI"
 
-        self.tilesets = TileSetsReader(self, self.ASSETS_DIR, 32, 32)
+        self.tilesets = TileSetsReader(self, self.TILESETS_DIR, 32, 32)
         self.current_tileset = "grass_tileset.png"
 
         self.show_grid = True
@@ -52,8 +53,16 @@ class LevelEditor:
             self.save[tileset] = []
 
         # UI Objects
+        lab_image = pygame.image.load(self.UI_DIR / "left_arrow.png")
+        self.left_arrow_button = Button(self, 0, 0, 16, 16, image=lab_image, scale=2, lock_pos=True)
+        self.left_arrow_button.center_y().move_me(-2, -140)
+
+        rab_image = pygame.image.load(self.UI_DIR / "right_arrow.png")
+        self.right_arrow_button = Button(self, 0, 0, 16, 16, image=rab_image, scale=2, lock_pos=True)
+        self.right_arrow_button.center_y().move_me(52, -140)
+
         self.seg_button = SegmentedButton(self, 25, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
-        self.seg_button.center_y()
+        self.seg_button.center_y().move_me(0, 40)
 
         cover_color = (220, 220, 220)
         self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color, lock_pos=True)
@@ -83,9 +92,10 @@ class LevelEditor:
 
         self.upper_cover.draw_me()
         self.left_cover.draw_me()
-        self.seg_button.draw_me()
 
-        self.camera_object.draw_me()
+        self.left_arrow_button.draw_me()
+        self.right_arrow_button.draw_me()
+        self.seg_button.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))

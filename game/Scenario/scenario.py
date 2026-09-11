@@ -16,7 +16,7 @@ class Scenario:
         self.settings = st_game.settings
 
         # Tilesets
-        self.tilesets = TileSetsReader(self, st_game.ASSETS_DIR, 32, 32)
+        self.tilesets = TileSetsReader(self, st_game.TILESETS_DIR, 32, 32)
 
         self.non_collideable_objects = pygame.sprite.Group()
         self.collideable_objects = pygame.sprite.Group()
