@@ -193,6 +193,8 @@ class Tile(UIObject):
         x, y = x + self.le_editor.screen_x, y + self.le_editor.screen_y
         if self.rect.collidepoint(x, y):
             self.kill()
+            return self
+        return None
 
 
 class CameraObject(UIObject):

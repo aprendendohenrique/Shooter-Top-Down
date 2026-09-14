@@ -186,7 +186,8 @@ class LevelEditor:
                     # If any tile, replace the tile
                     if self.tiles:
                         for tile in self.tiles:
-                            tile.clicked(destroy=True)
+                            if tile.clicked(destroy=True):
+                                self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
 
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
@@ -194,7 +195,8 @@ class LevelEditor:
                     self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
                 else:
                     for tile in self.tiles:
-                        tile.clicked(destroy=True)
+                        if tile.clicked(destroy=True):
+                            self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
 
     def _asset_clicked(self):
         button_id = self.seg_button.clicked()
