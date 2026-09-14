@@ -30,7 +30,7 @@ class LevelEditor:
         self.UI_DIR = self.BASE_DIR / "images" / "UI"
 
         self.tilesets = TileSetsReader(self, self.TILESETS_DIR, 32, 32)
-        self.current_tileset = "grass_tileset.png"
+        self.current_tileset = next(iter(self.tilesets))
 
         self.show_grid = True
 
@@ -61,9 +61,13 @@ class LevelEditor:
         self.right_arrow_button = Button(self, 0, 0, 16, 16, image=rab_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
         self.right_arrow_button.center_y().move_me(52, -140)
 
+        # Seg button
         self.seg_button_x = 25
         self.seg_button_y = 40
-        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
+
+        seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
+
+        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
         self.seg_button.center_y().move_me(0, self.seg_button_y)
 
         cover_color = (220, 220, 220)
@@ -187,16 +191,16 @@ class LevelEditor:
                     if self.tiles:
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
-                                self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
+                                self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
 
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
 
-                    self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
+                    self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
                 else:
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
-                            self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y]})
+                            self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
 
     def _asset_clicked(self):
         button_id = self.seg_button.clicked()
@@ -229,7 +233,10 @@ class LevelEditor:
             self.current_tileset = tilesets[0]
 
         self.seg_button.kill()
-        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=self.tilesets[self.current_tileset], vertical=True, lock_pos=True)
+
+        seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
+
+        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
         self.seg_button.center_y().move_me(0, self.seg_button_y)
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ class TileSetReader:
 
             for count in range(tiles_count):
                 tile = image.subsurface(x_tile_size * count, y_tile_size * count, x_tile_size, y_tile_size).convert()
-                tiles.append(tile)
+                tiles.append({"surface": tile, "collidable": False})
 
             return tiles
 

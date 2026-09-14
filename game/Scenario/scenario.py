@@ -33,7 +33,10 @@ class Scenario:
         with open(self.st_game.BASE_DIR / "levels" / "save.json", "r") as file:
             scenario = json.load(file)
         for tileset in self.tilesets:
-            for obj in scenario[tileset]:
-                tile = Object(self.st_game, self.tilesets[tileset][0].get_width(), self.tilesets[tileset][0].get_height(), obj["position"][0], obj["position"][1], image=self.tilesets[tileset][obj["tile_id"]])
-                self.non_collideable_objects.add(tile)
+            for sprite in scenario[tileset]:
+                tile = Object(self.st_game, self.tilesets[tileset][0]["surface"].get_width(), self.tilesets[tileset][0]["surface"].get_height(), sprite["position"][0], sprite["position"][1], image=self.tilesets[tileset][sprite["tile_id"]]["surface"])
+                if sprite["collidable"]:
+                    self.collideable_objects.add(tile)
+                else:
+                    self.non_collideable_objects.add(tile)
 
