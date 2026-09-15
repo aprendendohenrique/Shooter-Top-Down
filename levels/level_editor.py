@@ -7,7 +7,6 @@ import pygame
 from le_settings import LESettings
 from le_buttons import Button
 from le_buttons import SegmentedButton
-from le_tileset_reader import TileSetReader
 from le_tileset_reader import TileSetsReader
 from le_objects import Tile
 from le_objects import CameraObject
@@ -70,6 +69,13 @@ class LevelEditor:
         self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
         self.seg_button.center_y().move_me(0, self.seg_button_y)
 
+        self.seg_button_covers = pygame.sprite.Group()
+        for button in self.seg_button.objects:
+            cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True)
+            cover.visible = False
+            self.seg_button_covers.add(cover)
+
+        # Big Screen Covers
         cover_color = (220, 220, 220)
         self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color, lock_pos=True)
         self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=cover_color, lock_pos=True)
@@ -102,6 +108,9 @@ class LevelEditor:
         self.left_arrow_button.draw_me()
         self.right_arrow_button.draw_me()
         self.seg_button.draw_me()
+
+        for seg_btn_cover in self.seg_button_covers:
+            seg_btn_cover.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
@@ -180,8 +189,10 @@ class LevelEditor:
         if button_id != None:
             if self.tilesets[self.current_tileset][button_id]["collidable"]:
                 self.tilesets[self.current_tileset][button_id]["collidable"] = False
+                self.seg_button_covers.sprites()[button_id].visible = False
             else:
                 self.tilesets[self.current_tileset][button_id]["collidable"] = True
+                self.seg_button_covers.sprites()[button_id].visible = True
             print(self.tilesets[self.current_tileset][button_id]["collidable"])
 
     def _right_mouse_up_events(self):

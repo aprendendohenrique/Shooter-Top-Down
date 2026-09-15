@@ -13,6 +13,7 @@ class UIObject(Sprite):
         self.lock_pos = lock_pos
         self.color = color
         self.image = image
+        self.visible = True
         self.rect = pygame.Rect(x, y, width, height)
 
         if self.image:
@@ -20,17 +21,18 @@ class UIObject(Sprite):
             self.rect.height = self.image.get_height()
 
     def draw_me(self):
-        if self.image:
-            if self.lock_pos:
-                self.screen.blit(self.image, self.rect)
-            else:
-                self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
-        elif self.color:
-            if self.lock_pos:
-                pygame.draw.rect(self.screen, self.color, self.rect)
-            else:
-                pygame.draw.rect(self.screen, self.color,
-                                 self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
+        if self.visible:
+            if self.image:
+                if self.lock_pos:
+                    self.screen.blit(self.image, self.rect)
+                else:
+                    self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
+            elif self.color:
+                if self.lock_pos:
+                    pygame.draw.rect(self.screen, self.color, self.rect)
+                else:
+                    pygame.draw.rect(self.screen, self.color,
+                                     self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
 
     def move_me(self, x ,y):
         try:
