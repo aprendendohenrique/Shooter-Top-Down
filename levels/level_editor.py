@@ -128,6 +128,7 @@ class LevelEditor:
                     self._left_mouse_down_events()
                 elif pygame.mouse.get_pressed(num_buttons=3)[2]:
                     self.right_mouse_button_down = True
+                    self._right_mouse_down_events()
             elif event.type == pygame.MOUSEBUTTONUP:
                 if not pygame.mouse.get_pressed(num_buttons=3)[0]:
                     self.left_mouse_button_down = False
@@ -174,6 +175,15 @@ class LevelEditor:
         self.right_arrow_button.clicked()
         self._asset_clicked()
 
+    def _right_mouse_down_events(self):
+        button_id = self.seg_button.clicked()
+        if button_id != None:
+            if self.tilesets[self.current_tileset][button_id]["collidable"]:
+                self.tilesets[self.current_tileset][button_id]["collidable"] = False
+            else:
+                self.tilesets[self.current_tileset][button_id]["collidable"] = True
+            print(self.tilesets[self.current_tileset][button_id]["collidable"])
+
     def _right_mouse_up_events(self):
         # Change the cursor back to the arrow
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW))
@@ -191,7 +201,7 @@ class LevelEditor:
                     if self.tiles:
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
-                                self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
+                                self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
@@ -200,7 +210,7 @@ class LevelEditor:
                 else:
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
-                            self.save[self.current_tileset].remove({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
+                            self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != self.last_tile_placed_pos]
 
     def _asset_clicked(self):
         button_id = self.seg_button.clicked()
