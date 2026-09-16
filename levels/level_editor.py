@@ -71,7 +71,7 @@ class LevelEditor:
 
         self.seg_button_covers = pygame.sprite.Group()
         for button in self.seg_button.objects:
-            cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True)
+            cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True, srcalpha=50)
             cover.visible = False
             self.seg_button_covers.add(cover)
 

@@ -3,7 +3,7 @@ import pygame
 
 class UIObject(Sprite):
 
-    def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None, lock_pos=False):
+    def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None, lock_pos=False, srcalpha=255):
         super().__init__()
         self.le_editor = le_editor
         self.screen = le_editor.screen
@@ -11,10 +11,16 @@ class UIObject(Sprite):
         self.settings = le_editor.settings
 
         self.lock_pos = lock_pos
-        self.color = color
-        self.image = image
         self.visible = True
         self.rect = pygame.Rect(x, y, width, height)
+        self.srcalpha = srcalpha
+
+        if color and image is None:
+            self.image = pygame.Surface([width, height], flags=pygame.SRCALPHA)
+            self.image.fill(color)
+            self.image.set_alpha(self.srcalpha)
+        else:
+            self.image = image
 
         if self.image:
             self.rect.width = self.image.get_width()
@@ -22,17 +28,10 @@ class UIObject(Sprite):
 
     def draw_me(self):
         if self.visible:
-            if self.image:
-                if self.lock_pos:
-                    self.screen.blit(self.image, self.rect)
-                else:
-                    self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
-            elif self.color:
-                if self.lock_pos:
-                    pygame.draw.rect(self.screen, self.color, self.rect)
-                else:
-                    pygame.draw.rect(self.screen, self.color,
-                                     self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
+            if self.lock_pos:
+                self.screen.blit(self.image, self.rect)
+            else:
+                self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
 
     def move_me(self, x ,y):
         try:
