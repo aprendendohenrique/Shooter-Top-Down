@@ -75,6 +75,9 @@ class LevelEditor:
             cover.visible = False
             self.seg_button_covers.add(cover)
 
+        # Tile covers
+        self.tile_collision_covers = pygame.sprite.Group()
+
         # Big Screen Covers
         cover_color = (220, 220, 220)
         self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color, lock_pos=True)
@@ -111,6 +114,9 @@ class LevelEditor:
 
         for seg_btn_cover in self.seg_button_covers:
             seg_btn_cover.draw_me()
+
+        for tile_coll_cover in self.tile_collision_covers:
+            tile_coll_cover.draw_me()
 
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
@@ -214,14 +220,29 @@ class LevelEditor:
                             if tile.clicked(destroy=True):
                                 self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
+                        # Deleting cover on top of the tile
+                        for cover in self.tile_collision_covers:
+                            if cover.rect.collidepoint(x, y):
+                                cover.kill()
+
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
 
                     self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
+
+                    # Placing the cover on top of collision tiles
+                    if self.tilesets[self.current_tileset][self.tile_id]["collidable"]:
+                        cover = UIObject(self, tile.rect.x, tile.rect.y, tile.rect.width, tile.rect.height, color="green", lock_pos=True, srcalpha=50)
+                        self.tile_collision_covers.add(cover)
+
                 else:
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
-                            self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != self.last_tile_placed_pos]
+                            self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+                        # Deleting the cover on top of the tile
+                        for cover in self.tile_collision_covers:
+                            if cover.rect.collidepoint(x, y):
+                                cover.kill()
 
     def _asset_clicked(self):
         button_id = self.seg_button.clicked()
