@@ -232,13 +232,14 @@ class LevelEditor:
 
                     # Placing the cover on top of collision tiles
                     if self.tilesets[self.current_tileset][self.tile_id]["collidable"]:
-                        cover = UIObject(self, tile.rect.x, tile.rect.y, tile.rect.width, tile.rect.height, color="green", lock_pos=True, srcalpha=50)
+                        cover = UIObject(self, tile.rect.x, tile.rect.y, tile.rect.width, tile.rect.height, color="green", srcalpha=50)
                         self.tile_collision_covers.add(cover)
 
                 else:
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
-                            self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+                            for tileset in self.tilesets:
+                                self.save[tileset] = [d for d in self.save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
                         # Deleting the cover on top of the tile
                         for cover in self.tile_collision_covers:
                             if cover.rect.collidepoint(x, y):
