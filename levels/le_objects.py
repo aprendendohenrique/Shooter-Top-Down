@@ -4,17 +4,25 @@ import pygame
 class UIObject(Sprite):
 
     def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None, lock_pos=False, srcalpha=255):
+        """Dad class used in every UI Object"""
+
         super().__init__()
+
+        """Base Variables"""
+
         self.le_editor = le_editor
         self.screen = le_editor.screen
         self.screen_rect = le_editor.screen_rect
         self.settings = le_editor.settings
+
+        """Other Variables"""
 
         self.lock_pos = lock_pos
         self.visible = True
         self.rect = pygame.Rect(x, y, width, height)
         self.srcalpha = srcalpha
 
+        # Makes a surface if only the color was passed
         if color and image is None:
             self.image = pygame.Surface([width, height], flags=pygame.SRCALPHA)
             self.image.fill(color)
@@ -28,6 +36,8 @@ class UIObject(Sprite):
 
     def draw_me(self):
         if self.visible:
+
+            # If lock_pos is true the object follow the camera object, if false, it doesn't
             if self.lock_pos:
                 self.screen.blit(self.image, self.rect)
             else:
