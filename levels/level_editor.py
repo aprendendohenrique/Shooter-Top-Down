@@ -18,29 +18,39 @@ class LevelEditor:
     def __init__(self):
         pygame.init()
 
-        # Variables
+        """Base Variables"""
+
         self.settings = LESettings()
-        self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.settings.screen_resolution)
         self.screen_rect = self.screen.get_rect()
+        self.clock = pygame.time.Clock()
 
+        # Directors
         self.BASE_DIR = Path(__file__).resolve().parent
         self.TILESETS_DIR = self.BASE_DIR / "images" / "tilesets"
         self.UI_DIR = self.BASE_DIR / "images" / "UI"
 
+        """Other Variables"""
+
+        # Tile/Tileset
         self.tilesets = TileSetsReader(self, self.TILESETS_DIR, 32, 32)
         self.current_tileset = next(iter(self.tilesets))
 
-        self.show_grid = True
-
-        self.tile = None
-        self.tile_id = None
         self.tiles = pygame.sprite.Group()
+
+        # Selected tile on the segmented button
+        self.tile = None
+
+        # Tile id of the selected tile
+        self.tile_id = None
+
+        self.show_grid = True
 
         self.left_mouse_button_down = False
         self.right_mouse_button_down = False
 
-        # Camera
+        """Camera"""
+
         self.camera_object = CameraObject(self, 0, 0, 32, 32).center()
         self.last_mouse_position = [0, 0]
         self.screen_x = 0
@@ -51,102 +61,139 @@ class LevelEditor:
         for tileset in self.tilesets:
             self.save[tileset] = []
 
-        # UI Objects
-        lab_image = pygame.image.load(self.UI_DIR / "left_arrow.png")
-        self.left_arrow_button = Button(self, 0, 0, 16, 16, image=lab_image, scale=2, command=lambda: self.change_tileset(-1), lock_pos=True)
+        """UI Objects"""
+
+        # Arrows
+        left_arrow_image = pygame.image.load(self.UI_DIR / "left_arrow.png")
+        self.left_arrow_button = Button(self, 0, 0, 16, 16, image=left_arrow_image, scale=2, command=lambda: self.change_tileset(-1), lock_pos=True)
         self.left_arrow_button.center_y().move_me(-2, -140)
 
-        rab_image = pygame.image.load(self.UI_DIR / "right_arrow.png")
-        self.right_arrow_button = Button(self, 0, 0, 16, 16, image=rab_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
+        right_arrow_image = pygame.image.load(self.UI_DIR / "right_arrow.png")
+        self.right_arrow_button = Button(self, 0, 0, 16, 16, image=right_arrow_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
         self.right_arrow_button.center_y().move_me(52, -140)
 
-        # Seg button
+        # Segmented button, where you choose which tile to paint
         self.seg_button_x = 25
         self.seg_button_y = 40
 
         seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
 
         self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
+
+        # Positioning seg_button
         self.seg_button.center_y().move_me(0, self.seg_button_y)
 
+        # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
+
         for button in self.seg_button.objects:
             cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True, srcalpha=50)
             cover.visible = False
             self.seg_button_covers.add(cover)
 
-        # Tile covers
         self.tile_collision_covers = pygame.sprite.Group()
 
         # Big Screen Covers
-        cover_color = (220, 220, 220)
-        self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=cover_color, lock_pos=True)
-        self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=cover_color, lock_pos=True)
+        big_covers_color = (220, 220, 220)
+        self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=big_covers_color, lock_pos=True)
+        self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=big_covers_color, lock_pos=True)
 
     def run(self):
         """The main loop that runs the Level Editor"""
 
         while True:
+            # Check for mouse/keyboard events
             self.check_events()
             self._mouse_events()
 
             self._camera()
 
             self._update_screen()
+
             self.clock.tick(self.settings.fps)
 
     def _update_screen(self):
+        """Updates everything to the screen"""
+
+        # Fill the screen with a color "background"
         self.screen.fill(self.settings.background_color)
 
+        # If grid is on, show it
         if self.show_grid:
             self.draw_lines()
 
-        # UIObjects
+        """UI Objects"""
+
+        # Draw all the painted tiles and it's covers
         for tile in self.tiles:
             tile.draw_me()
 
+        for tile_coll_cover in self.tile_collision_covers:
+            tile_coll_cover.draw_me()
+
+        # Big Screen Covers
         self.upper_cover.draw_me()
         self.left_cover.draw_me()
 
+        # Arrows
         self.left_arrow_button.draw_me()
         self.right_arrow_button.draw_me()
+
+        # Segmented Button and it's covers
         self.seg_button.draw_me()
 
         for seg_btn_cover in self.seg_button_covers:
             seg_btn_cover.draw_me()
 
-        for tile_coll_cover in self.tile_collision_covers:
-            tile_coll_cover.draw_me()
-
+        # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
         vertical = pygame.draw.line(self.screen, "red", (0, self.screen.get_height()/2), (self.screen.get_width(), self.screen.get_height()/2))
 
+        # Update the screen
         pygame.display.flip()
 
     def _camera(self):
+        """Update the values that makes the camera follow the player"""
+
         self.screen_x = (self.camera_object.rect.x + self.camera_object.rect.width / 2) - self.screen_rect.width // 2
         self.screen_y = (self.camera_object.rect.y + self.camera_object.rect.height / 2) - self.screen_rect.height // 2
 
     def check_events(self):
         """Handles every event"""
 
+        # Gets every event
         for event in pygame.event.get():
+
+            # Closing the game
             if event.type == pygame.QUIT:
                 self._save_things()
                 sys.exit()
+
+            # Keydown events
             elif event.type == pygame.KEYDOWN:
                 self._key_down_events(event)
+
+            # Mouse button down events
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # Checking if the left mouse button is being clicked
+
+                # Left mouse button down
                 if pygame.mouse.get_pressed(num_buttons=3)[0]:
                     self.left_mouse_button_down = True
                     self._left_mouse_down_events()
+
+                # Right mouse button down
                 elif pygame.mouse.get_pressed(num_buttons=3)[2]:
                     self.right_mouse_button_down = True
                     self._right_mouse_down_events()
+
+            # Mouse button up events
             elif event.type == pygame.MOUSEBUTTONUP:
+
+                # Left mouse button up
                 if not pygame.mouse.get_pressed(num_buttons=3)[0]:
                     self.left_mouse_button_down = False
+
+                # Right mouse button down
                 if not pygame.mouse.get_pressed(num_buttons=3)[2]:
                     self.right_mouse_button_down = False
                     self._right_mouse_up_events()
@@ -164,97 +211,154 @@ class LevelEditor:
                 self.show_grid = True
 
     def _save_things(self):
+        """Simple save function"""
+
         with open("save.json", "w") as file:
             json.dump(self.save, file, indent=4)
 
     def _mouse_events(self):
+        """Every mouse event, that can be clicked and hold"""
+
+        # Get mouse position
         x, y = pygame.mouse.get_pos()
 
+        # Right mouse button down
         if self.right_mouse_button_down:
+
             # Change the cursor to the hand
             pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND))
 
+            # Distance that the mouse traveled
             distance_x = self.last_mouse_position[0] - x
             distance_y = self.last_mouse_position[1] - y
 
+            # Moves the camera object using that distance
             self.camera_object.move_me(distance_x, distance_y)
+
+        # Right mouse button down
         elif self.left_mouse_button_down:
+
             # Grid clicked
             self._grid_clicked(x + self.screen_x, y + self.screen_y, x, y)
 
         self.last_mouse_position = [x, y]
 
     def _left_mouse_down_events(self):
-        # Asset seg button clicked
+        """Handles only click events"""
+
+        # Check if the user clicked any arrow
         self.left_arrow_button.clicked()
         self.right_arrow_button.clicked()
+
+        # Check if the user clicked the segmented button
         self._asset_clicked()
 
     def _right_mouse_down_events(self):
+        """Handles only click events"""
+
+        # If any of the segmented button was clicked, receive its id
         button_id = self.seg_button.clicked()
+
+        # Check if any segmented button was clicked
         if button_id != None:
+
+            # If collidable is on, make it false and hide cover
             if self.tilesets[self.current_tileset][button_id]["collidable"]:
                 self.tilesets[self.current_tileset][button_id]["collidable"] = False
                 self.seg_button_covers.sprites()[button_id].visible = False
+
+            # If collidable is off, make it true and show cover
             else:
                 self.tilesets[self.current_tileset][button_id]["collidable"] = True
                 self.seg_button_covers.sprites()[button_id].visible = True
             print(self.tilesets[self.current_tileset][button_id]["collidable"])
 
     def _right_mouse_up_events(self):
-        # Change the cursor back to the arrow
+        """Handles every right mouse button up event"""
+
+        # Sets the mouse cursor back to normal
         pygame.mouse.set_cursor(pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW))
 
     def _grid_clicked(self, x, y, fixed_x, fixed_y):
+        """Handles what happens if the grid is clicked"""
+
+        # Check if the mouse is not on the covers
         if not self.left_cover.rect.collidepoint(fixed_x, fixed_y) and not self.upper_cover.rect.collidepoint(fixed_x, fixed_y):
+
+            # Check if you're clicking on the grid, by comparing the mouse position with its size
             if (x > -self.settings.grid_size and y > -self.settings.grid_size) and (x < self.screen_rect.width + self.settings.grid_size and y < self.screen_rect.height + self.settings.grid_size):
+
+                # Gets the position of the clicked grid
                 x_grid = x // 32
                 y_grid = y // 32
 
                 print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
+                # Check if any tile on the segmented button was selected
                 if self.tile is not None:
-                    # If any tile, replace the tile
+
+                    # Replaces the tile and its cover, if there was already one on the place
                     if self.tiles:
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
                                 self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
-                        # Deleting cover on top of the tile
+                        # Delete cover on top of the tile
                         for cover in self.tile_collision_covers:
                             if cover.rect.collidepoint(x, y):
                                 cover.kill()
 
+                    # Creates the new tile
                     tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
                     self.tiles.add(tile)
 
+                    # Save it
                     self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
 
-                    # Placing the cover on top of collision tiles
+                    # Place the cover on top of collidable tiles
                     if self.tilesets[self.current_tileset][self.tile_id]["collidable"]:
                         cover = UIObject(self, tile.rect.x, tile.rect.y, tile.rect.width, tile.rect.height, color="green", srcalpha=50)
                         self.tile_collision_covers.add(cover)
 
+                # If a tile to pain was not selected
                 else:
+
+                    # Destroy the clicked tiles on grid
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
                             for tileset in self.tilesets:
                                 self.save[tileset] = [d for d in self.save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
-                        # Deleting the cover on top of the tile
+
+                        # Destroy the cover on top of the tile
                         for cover in self.tile_collision_covers:
                             if cover.rect.collidepoint(x, y):
                                 cover.kill()
 
     def _asset_clicked(self):
+        """Handles the choosing a tile from the segmented button"""
+
+        # Checks if any button of the segmented button was clicked, and get its id
         button_id = self.seg_button.clicked()
+
+        # Checks if any button was of the segmented was clicked
         if button_id is not None:
+
+            # If the clicked tile is not the same from before
             if self.tile != self.seg_button.images[button_id]:
+
+                # Sets the tile to the clicked tile and its id too
                 self.tile = self.seg_button.images[button_id]
                 self.tile_id = button_id
+
+            # If it is the same from before
             else:
+
+                # Sets tile to None
                 self.tile = None
 
     def draw_lines(self):
+        """Draw the grid lines"""
+
         width = self.screen.get_width()
         height = self.screen.get_height()
 
@@ -265,16 +369,21 @@ class LevelEditor:
             pygame.draw.line(self.screen, "black", start_pos=(-self.settings.grid_size - self.screen_x, y - self.screen_y), end_pos=(width + self.settings.grid_size - self.screen_x, y - self.screen_y), width=self.settings.grid_width)
 
     def change_tileset(self, direction=1):
+        """Handles the tileset changing, when clicking the arrows"""
+
+        # Get the tileset keys and store it
         tilesets = []
 
         for tileset in self.tilesets.keys():
             tilesets.append(tileset)
 
+        # Try to change the tileset, if it goes wrong, make it go back to the starter one
         try:
             self.current_tileset = tilesets[tilesets.index(self.current_tileset) + direction]
         except IndexError:
             self.current_tileset = tilesets[0]
 
+        # Destroy the old segmented button, and creates a new one on top of it
         self.seg_button.kill()
 
         seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
