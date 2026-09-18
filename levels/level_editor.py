@@ -4,10 +4,12 @@ from pathlib import Path
 
 import pygame
 
+from le_file_utils import FileUtils
 from le_settings import LESettings
 from le_buttons import Button
 from le_buttons import SegmentedButton
 from le_tileset_reader import TileSetsReader
+from le_tileset_reader import TileSetReader
 from le_objects import Tile
 from le_objects import CameraObject
 from levels.le_objects import UIObject
@@ -33,8 +35,8 @@ class LevelEditor:
         """Other Variables"""
 
         # Tile/Tileset
-        self.tilesets = TileSetsReader(self, self.TILESETS_DIR, 32, 32)
-        self.current_tileset = next(iter(self.tilesets))
+        self.tilesets = {}
+        self.current_tileset = None
 
         self.tiles = pygame.sprite.Group()
 
@@ -58,10 +60,10 @@ class LevelEditor:
 
         #Save
         self.save = {}
-        for tileset in self.tilesets:
-            self.save[tileset] = []
 
         """UI Objects"""
+
+        self.buttons = pygame.sprite.Group()
 
         # Arrows
         left_arrow_image = pygame.image.load(self.UI_DIR / "left_arrow.png")
@@ -72,24 +74,17 @@ class LevelEditor:
         self.right_arrow_button = Button(self, 0, 0, 16, 16, image=right_arrow_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
         self.right_arrow_button.center_y().move_me(52, -140)
 
-        # Segmented button, where you choose which tile to paint
+        self.buttons.add(self.left_arrow_button)
+        self.buttons.add(self.right_arrow_button)
+
+        # Segmented button, is where you choose which tile to paint
+        self.seg_button = None
+
         self.seg_button_x = 25
         self.seg_button_y = 40
 
-        seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
-
-        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
-
-        # Positioning seg_button
-        self.seg_button.center_y().move_me(0, self.seg_button_y)
-
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
-
-        for button in self.seg_button.objects:
-            cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True, srcalpha=50)
-            cover.visible = False
-            self.seg_button_covers.add(cover)
 
         self.tile_collision_covers = pygame.sprite.Group()
 
@@ -135,12 +130,9 @@ class LevelEditor:
         self.upper_cover.draw_me()
         self.left_cover.draw_me()
 
-        # Arrows
-        self.left_arrow_button.draw_me()
-        self.right_arrow_button.draw_me()
-
-        # Segmented Button and it's covers
-        self.seg_button.draw_me()
+        # Buttons
+        for button in self.buttons:
+            button.draw_me()
 
         for seg_btn_cover in self.seg_button_covers:
             seg_btn_cover.draw_me()
@@ -209,12 +201,17 @@ class LevelEditor:
                 self.show_grid = False
             else:
                 self.show_grid = True
+        elif event.key == pygame.K_l:
+            tileset_path = FileUtils.choose_image()
+
+            self.tilesets[tileset_path] = TileSetReader(self, tileset_path, 32, 32)
+
+            self.change_tileset(tileset_path)
 
     def _save_things(self):
         """Simple save function"""
 
-        with open("save.json", "w") as file:
-            json.dump(self.save, file, indent=4)
+        ...
 
     def _mouse_events(self):
         """Every mouse event, that can be clicked and hold"""
@@ -257,7 +254,10 @@ class LevelEditor:
         """Handles only click events"""
 
         # If any of the segmented button was clicked, receive its id
-        button_id = self.seg_button.clicked()
+        if self.seg_button:
+            button_id = self.seg_button.clicked()
+        else:
+            button_id = None
 
         # Check if any segmented button was clicked
         if button_id != None:
@@ -301,7 +301,8 @@ class LevelEditor:
                     if self.tiles:
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
-                                self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+                                ...
+                                # self.save[self.current_tileset] = [d for d in self.save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
                         # Delete cover on top of the tile
                         for cover in self.tile_collision_covers:
@@ -313,7 +314,7 @@ class LevelEditor:
                     self.tiles.add(tile)
 
                     # Save it
-                    self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
+                    # self.save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
 
                     # Place the cover on top of collidable tiles
                     if self.tilesets[self.current_tileset][self.tile_id]["collidable"]:
@@ -327,7 +328,8 @@ class LevelEditor:
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
                             for tileset in self.tilesets:
-                                self.save[tileset] = [d for d in self.save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+                                ...
+                                # self.save[tileset] = [d for d in self.save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
                         # Destroy the cover on top of the tile
                         for cover in self.tile_collision_covers:
@@ -338,7 +340,10 @@ class LevelEditor:
         """Handles the choosing a tile from the segmented button"""
 
         # Checks if any button of the segmented button was clicked, and get its id
-        button_id = self.seg_button.clicked()
+        if self.seg_button:
+            button_id = self.seg_button.clicked()
+        else:
+            button_id = None
 
         # Checks if any button was of the segmented was clicked
         if button_id is not None:
@@ -368,28 +373,41 @@ class LevelEditor:
         for y in range(0 - self.settings.grid_size, height + self.settings.grid_size, self.settings.TILE_SIZE):
             pygame.draw.line(self.screen, "black", start_pos=(-self.settings.grid_size - self.screen_x, y - self.screen_y), end_pos=(width + self.settings.grid_size - self.screen_x, y - self.screen_y), width=self.settings.grid_width)
 
-    def change_tileset(self, direction=1):
+    def change_tileset(self, direction=0):
         """Handles the tileset changing, when clicking the arrows"""
+        if self.tilesets:
+            # Get the tileset keys and store it
+            tilesets = []
 
-        # Get the tileset keys and store it
-        tilesets = []
 
-        for tileset in self.tilesets.keys():
-            tilesets.append(tileset)
+            for tileset in self.tilesets.keys():
+                tilesets.append(tileset)
 
-        # Try to change the tileset, if it goes wrong, make it go back to the starter one
-        try:
-            self.current_tileset = tilesets[tilesets.index(self.current_tileset) + direction]
-        except IndexError:
-            self.current_tileset = tilesets[0]
+            # Try to change the tileset, if it goes wrong, make it go back to the starter one
+            if isinstance(direction, Path):
+                self.current_tileset = direction
+            else:
+                try:
+                    self.current_tileset = tilesets[tilesets.index(self.current_tileset) + direction]
+                except IndexError:
+                    self.current_tileset = tilesets[0]
 
-        # Destroy the old segmented button, and creates a new one on top of it
-        self.seg_button.kill()
+            # Destroy the old segmented button, and creates a new one on top of it
+            if self.seg_button:
+                self.seg_button.kill()
 
-        seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
+            seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
 
-        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
-        self.seg_button.center_y().move_me(0, self.seg_button_y)
+            self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
+            self.seg_button.center_y().move_me(0, self.seg_button_y)
+
+            self.buttons.add(self.seg_button)
+
+            if not self.seg_button_covers:
+                for button in self.seg_button.objects:
+                    cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True, srcalpha=50)
+                    cover.visible = False
+                    self.seg_button_covers.add(cover)
 
 if __name__ == '__main__':
     le = LevelEditor()
