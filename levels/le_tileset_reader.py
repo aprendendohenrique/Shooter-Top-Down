@@ -7,7 +7,10 @@ class TileSetReader:
         """Reads the image and returns a list with each tile"""
 
         # Load the image from the path and convert it
-        image = pygame.image.load(tileset).convert()
+        try:
+            image = pygame.image.load(tileset).convert()
+        except FileNotFoundError:
+            return None
 
         # Checks if its possible to separate the image in tiles with the given size
         if image.get_width() % x_tile_size == 0 and image.get_height() % y_tile_size == 0:

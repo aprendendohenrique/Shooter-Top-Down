@@ -63,7 +63,8 @@ class LevelEditor:
 
         """UI Objects"""
 
-        self.buttons = pygame.sprite.Group()
+        # Group that has the seg and arrow buttons
+        self.seg_group_buttons = pygame.sprite.Group()
 
         # Arrows
         left_arrow_image = pygame.image.load(self.UI_DIR / "left_arrow.png")
@@ -74,8 +75,11 @@ class LevelEditor:
         self.right_arrow_button = Button(self, 0, 0, 16, 16, image=right_arrow_image, scale=2, command=lambda: self.change_tileset(1), lock_pos=True)
         self.right_arrow_button.center_y().move_me(52, -140)
 
-        self.buttons.add(self.left_arrow_button)
-        self.buttons.add(self.right_arrow_button)
+        self.seg_group_buttons.add(self.left_arrow_button)
+        self.seg_group_buttons.add(self.right_arrow_button)
+
+        load_tileset_btn_image = pygame.image.load(self.UI_DIR / "clipboard.png")
+        self.load_tileset_button = Button(self, 25, 25, 64, 64, scale=0.7, command=self.load_tileset, image=load_tileset_btn_image, lock_pos=True)
 
         # Segmented button, is where you choose which tile to paint
         self.seg_button = None
@@ -131,11 +135,14 @@ class LevelEditor:
         self.left_cover.draw_me()
 
         # Buttons
-        for button in self.buttons:
-            button.draw_me()
+        if self.seg_button:
+            for button in self.seg_group_buttons:
+                button.draw_me()
 
         for seg_btn_cover in self.seg_button_covers:
             seg_btn_cover.draw_me()
+
+        self.load_tileset_button.draw_me()
 
         # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
@@ -201,12 +208,6 @@ class LevelEditor:
                 self.show_grid = False
             else:
                 self.show_grid = True
-        elif event.key == pygame.K_l:
-            tileset_path = FileUtils.choose_image()
-
-            self.tilesets[tileset_path] = TileSetReader(self, tileset_path, 32, 32)
-
-            self.change_tileset(tileset_path)
 
     def _save_things(self):
         """Simple save function"""
@@ -246,6 +247,9 @@ class LevelEditor:
         # Check if the user clicked any arrow
         self.left_arrow_button.clicked()
         self.right_arrow_button.clicked()
+
+        # Load tileset button
+        self.load_tileset_button.clicked()
 
         # Check if the user clicked the segmented button
         self._asset_clicked()
@@ -401,13 +405,28 @@ class LevelEditor:
             self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True, lock_pos=True)
             self.seg_button.center_y().move_me(0, self.seg_button_y)
 
-            self.buttons.add(self.seg_button)
+            self.seg_group_buttons.add(self.seg_button)
 
             if not self.seg_button_covers:
                 for button in self.seg_button.objects:
                     cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height, color="green", lock_pos=True, srcalpha=50)
                     cover.visible = False
                     self.seg_button_covers.add(cover)
+
+    def load_tileset(self):
+        """Opens a window for the user to choose the tileset set, and change it"""
+
+        # Opens the window to choose the tileset
+        tileset_path = FileUtils.choose_image()
+
+        # If there's a path...
+        if tileset_path.name != "":
+
+            # Gets its tiles
+            self.tilesets[tileset_path] = TileSetReader(self, tileset_path, 32, 32)
+
+            # Change the seg_button to the new Tileset
+            self.change_tileset(tileset_path)
 
 if __name__ == '__main__':
     le = LevelEditor()

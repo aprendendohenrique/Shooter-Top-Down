@@ -14,3 +14,13 @@ class FileUtils:
         root.destroy()
 
         return path
+
+    @staticmethod
+    def choose_dir():
+        root = tk.Tk()
+        root.withdraw()
+
+        path = Path(filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg")]))
+        root.destroy()
+
+        return path
