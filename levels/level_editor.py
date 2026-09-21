@@ -81,6 +81,9 @@ class LevelEditor:
         load_tileset_btn_image = pygame.image.load(self.UI_DIR / "clipboard.png")
         self.load_tileset_button = Button(self, 25, 25, 64, 64, scale=0.7, command=self.load_tileset, image=load_tileset_btn_image, lock_pos=True)
 
+        save_map_btn_image = pygame.image.load(self.UI_DIR / "save.png")
+        self.save_map_button = Button(self, 70, 22, 64, 64, scale=0.8, image=save_map_btn_image, lock_pos=True)
+
         # Segmented button, is where you choose which tile to paint
         self.seg_button = None
 
@@ -143,6 +146,7 @@ class LevelEditor:
             seg_btn_cover.draw_me()
 
         self.load_tileset_button.draw_me()
+        self.save_map_button.draw_me()
 
         # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
@@ -201,7 +205,7 @@ class LevelEditor:
         """Handles every KeyBoard Down events"""
 
         if event.key == pygame.K_q:
-            self._save_things()
+            self.save_map()
             sys.exit()
         elif event.key == pygame.K_g:
             if self.show_grid:
@@ -209,7 +213,7 @@ class LevelEditor:
             else:
                 self.show_grid = True
 
-    def _save_things(self):
+    def save_map(self):
         """Simple save function"""
 
         ...
@@ -244,14 +248,14 @@ class LevelEditor:
     def _left_mouse_down_events(self):
         """Handles only click events"""
 
-        # Check if the user clicked any arrow
+        # Buttons
         self.left_arrow_button.clicked()
         self.right_arrow_button.clicked()
 
-        # Load tileset button
         self.load_tileset_button.clicked()
 
-        # Check if the user clicked the segmented button
+        self.save_map_button.clicked()
+
         self._asset_clicked()
 
     def _right_mouse_down_events(self):
