@@ -8,7 +8,6 @@ from le_file_utils import FileUtils
 from le_settings import LESettings
 from le_buttons import Button
 from le_buttons import SegmentedButton
-from le_tileset_reader import TileSetsReader
 from le_tileset_reader import TileSetReader
 from le_objects import Tile
 from le_objects import CameraObject
@@ -58,9 +57,6 @@ class LevelEditor:
         self.screen_x = 0
         self.screen_y = 0
 
-        #Save
-        self.current_save = {}
-
         """UI Objects"""
 
         # Group that has the seg and arrow buttons
@@ -99,6 +95,11 @@ class LevelEditor:
         big_covers_color = (220, 220, 220)
         self.upper_cover = UIObject(self, 0, 0, self.screen.get_width(), 100, color=big_covers_color, lock_pos=True)
         self.left_cover = UIObject(self, 0, 0, 100, self.screen.get_height(), color=big_covers_color, lock_pos=True)
+
+        """Save"""
+
+        self.current_save = {}
+        self.load_map()
 
     def run(self):
         """The main loop that runs the Level Editor"""
@@ -218,6 +219,8 @@ class LevelEditor:
         try:
             with open(save_path, "w") as file:
                 json.dump(self.current_save, file, indent=4)
+            with open(self.BASE_DIR / "last_save.json", "w") as file:
+                file.write(str(save_path))
         except PermissionError:
             pass
 
@@ -313,7 +316,7 @@ class LevelEditor:
                     if self.tiles:
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
-                                ...
+                                """<<<<-------------------- CODE HERE"""
                                 self.current_save[self.current_tileset] = [d for d in self.current_save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
                         # Delete cover on top of the tile
@@ -397,7 +400,11 @@ class LevelEditor:
         # Try to change the tileset, if it goes wrong, make it go back to the starter one
         if isinstance(direction, Path):
             self.current_tileset = str(direction)
-            self.current_save[self.current_tileset] = []
+            try:
+                self.current_save[self.current_tileset]
+            except Exception as ex:
+                self.current_save[self.current_tileset] = []
+                print(ex)
         else:
             try:
                 self.current_tileset = tilesets[tilesets.index(self.current_tileset) + direction]
@@ -423,11 +430,14 @@ class LevelEditor:
                 cover.visible = False
                 self.seg_button_covers.add(cover)
 
-    def load_tileset(self):
+    def load_tileset(self, path=None):
         """Opens a window for the user to choose the tileset set, and change it"""
 
         # Opens the window to choose the tileset
-        tileset_path = FileUtils.choose_image()
+        if path is None:
+            tileset_path = FileUtils.choose_image()
+        else:
+            tileset_path = Path(path)
 
         # If there's a path...
         if tileset_path.name != "":
@@ -437,6 +447,31 @@ class LevelEditor:
 
             # Change the seg_button to the new Tileset
             self.change_tileset(tileset_path)
+
+    def load_map(self):
+        with open(self.BASE_DIR / "last_save.json", "r") as file:
+            path = file.readline()
+
+            if path:
+                with open(path, "r") as save_file:
+                    self.current_save = json.load(save_file)
+
+                    # Load Tileset
+                    for tileset in self.current_save.keys():
+                        self.load_tileset(tileset)
+
+                        # Load Tiles
+                        for tile in self.current_save[tileset]:
+                            t = Tile(self, tile["position"][0], tile["position"][1],
+                                        self.tilesets[tileset][tile["tile_id"]]["surface"])
+                            self.tiles.add(t)
+
+                            # Place cover on top, if tile is collidable
+                            if tile["collidable"]:
+                                cover = UIObject(self, t.rect.x, t.rect.y, t.rect.width, t.rect.height,
+                                                 color="green", srcalpha=50)
+                                self.tile_collision_covers.add(cover)
+
 
 if __name__ == '__main__':
     le = LevelEditor()
