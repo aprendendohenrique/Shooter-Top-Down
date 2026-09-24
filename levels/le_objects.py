@@ -3,7 +3,7 @@ import pygame
 
 class UIObject(Sprite):
 
-    def __init__(self, le_editor, x, y, width=0, height=0, color=None, image=None, lock_pos=False, srcalpha=255):
+    def __init__(self, le_editor, x=0, y=0, width=0, height=0, color=None, image=None, lock_pos=False, srcalpha=255):
         """Dad class used in every UI Object"""
 
         super().__init__()

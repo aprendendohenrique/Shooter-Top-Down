@@ -59,6 +59,12 @@ class LevelEditor:
 
         """UI Objects"""
 
+        # Segmented button, is where you choose which tile to paint
+        self.seg_button = None
+
+        self.seg_button_x = 25
+        self.seg_button_y = 40
+
         # Group that has the seg and arrow buttons
         self.seg_group_buttons = pygame.sprite.Group()
 
@@ -80,11 +86,13 @@ class LevelEditor:
         save_map_btn_image = pygame.image.load(self.UI_DIR / "save.png")
         self.save_map_button = Button(self, 70, 22, 64, 64, scale=0.8, command=self.save_map, image=save_map_btn_image, lock_pos=True)
 
-        # Segmented button, is where you choose which tile to paint
-        self.seg_button = None
+        # Clear Button
+        clear_btn_image = pygame.image.load(self.UI_DIR / "x.png")
+        self.clear_button = Button(self, 115, 22, 64, 64, scale=0.8, image=clear_btn_image, lock_pos=True)
 
-        self.seg_button_x = 25
-        self.seg_button_y = 40
+        clear_frame_color = (100, 100, 100)
+        self.clear_frame = UIObject(self, width=320, height=200, color=clear_frame_color, lock_pos=True)
+        self.clear_frame.center()
 
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
@@ -148,6 +156,10 @@ class LevelEditor:
 
         self.load_tileset_button.draw_me()
         self.save_map_button.draw_me()
+
+        # Clear Button
+        self.clear_button.draw_me()
+        self.clear_frame.draw_me()
 
         # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
