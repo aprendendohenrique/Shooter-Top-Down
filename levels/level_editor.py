@@ -316,8 +316,13 @@ class LevelEditor:
                     if self.tiles:
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
-                                """<<<<-------------------- CODE HERE"""
-                                self.current_save[self.current_tileset] = [d for d in self.current_save[self.current_tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+                                for tileset in self.tilesets:
+                                    self.current_save[tileset] = [d for d in self.current_save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+
+                                # Destroy the cover on top of the tile
+                                for cover in self.tile_collision_covers:
+                                    if cover.rect.collidepoint(x, y):
+                                        cover.kill()
 
                         # Delete cover on top of the tile
                         for cover in self.tile_collision_covers:
@@ -343,7 +348,6 @@ class LevelEditor:
                     for tile in self.tiles:
                         if tile.clicked(destroy=True):
                             for tileset in self.tilesets:
-                                ...
                                 self.current_save[tileset] = [d for d in self.current_save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
                         # Destroy the cover on top of the tile
@@ -423,12 +427,20 @@ class LevelEditor:
 
         self.seg_group_buttons.add(self.seg_button)
 
+        # Make the covers if there wasn't one
         if not self.seg_button_covers:
             for button in self.seg_button.objects:
                 cover = UIObject(self, button.rect.x, button.rect.y, button.rect.width, button.rect.height,
                                  color="green", lock_pos=True, srcalpha=50)
                 cover.visible = False
                 self.seg_button_covers.add(cover)
+        else:
+            # If there was, it "loads" from the tileset which ones were on
+            for cover in self.seg_button_covers:
+                cover.visible = False
+            for count, tile in enumerate(self.tilesets[self.current_tileset]):
+                if tile["collidable"]:
+                    self.seg_button_covers.sprites()[count].visible = True
 
     def load_tileset(self, path=None):
         """Opens a window for the user to choose the tileset set, and change it"""
@@ -463,7 +475,7 @@ class LevelEditor:
                         # Load Tiles
                         for tile in self.current_save[tileset]:
                             t = Tile(self, tile["position"][0], tile["position"][1],
-                                        self.tilesets[tileset][tile["tile_id"]]["surface"])
+                                     self.tilesets[tileset][tile["tile_id"]]["surface"])
                             self.tiles.add(t)
 
                             # Place cover on top, if tile is collidable
