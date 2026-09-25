@@ -46,6 +46,7 @@ class LevelEditor:
         self.tile_id = None
 
         self.show_grid = True
+        self.able_to_click_on_grid = True
 
         self.left_mouse_button_down = False
         self.right_mouse_button_down = False
@@ -93,6 +94,17 @@ class LevelEditor:
         clear_frame_color = (100, 100, 100)
         self.clear_frame = UIObject(self, width=320, height=200, color=clear_frame_color, lock_pos=True)
         self.clear_frame.center()
+
+        clear_question_text = "Do you wanna start from scratch?"
+        self.clear_question_font = pygame.font.SysFont("bahnschrift", 16).render(clear_question_text, True, "black", clear_frame_color)
+        self.clear_question_rect = self.clear_question_font.get_rect(centerx=self.screen_rect.width // 2, y=self.clear_frame.rect.y + 25)
+
+        clear_yes_no_background = (125, 125, 125)
+        self.clear_yes_font = pygame.font.SysFont("consolas", 16).render("Yes", True, "black", clear_yes_no_background)
+        self.clear_yes_rect = self.clear_yes_font.get_rect(center=(self.screen_rect.width // 2 + 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
+
+        self.clear_no_font = pygame.font.SysFont("consolas", 16).render("No", True, "black", clear_yes_no_background)
+        self.clear_no_rect = self.clear_yes_font.get_rect(center=(self.screen_rect.width // 2 - 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
 
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
@@ -160,6 +172,10 @@ class LevelEditor:
         # Clear Button
         self.clear_button.draw_me()
         self.clear_frame.draw_me()
+
+        self.screen.blit(self.clear_question_font, self.clear_question_rect)
+        self.screen.blit(self.clear_yes_font, self.clear_yes_rect)
+        self.screen.blit(self.clear_no_font, self.clear_no_rect)
 
         # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
@@ -309,63 +325,66 @@ class LevelEditor:
     def _grid_clicked(self, x, y, fixed_x, fixed_y):
         """Handles what happens if the grid is clicked"""
 
-        # Check if the mouse is not on the covers
-        if not self.left_cover.rect.collidepoint(fixed_x, fixed_y) and not self.upper_cover.rect.collidepoint(fixed_x, fixed_y):
+        # Check if the user should be able to click on grid
+        if self.able_to_click_on_grid:
 
-            # Check if you're clicking on the grid, by comparing the mouse position with its size
-            if (x > -self.settings.grid_size and y > -self.settings.grid_size) and (x < self.screen_rect.width + self.settings.grid_size and y < self.screen_rect.height + self.settings.grid_size):
+            # Check if the mouse is not on the covers
+            if not self.left_cover.rect.collidepoint(fixed_x, fixed_y) and not self.upper_cover.rect.collidepoint(fixed_x, fixed_y):
 
-                # Gets the position of the clicked grid
-                x_grid = x // 32
-                y_grid = y // 32
+                # Check if you're clicking on the grid, by comparing the mouse position with its size
+                if (x > -self.settings.grid_size and y > -self.settings.grid_size) and (x < self.screen_rect.width + self.settings.grid_size and y < self.screen_rect.height + self.settings.grid_size):
 
-                print(f"x: {x_grid + 1} y: {y_grid + 1}")
+                    # Gets the position of the clicked grid
+                    x_grid = x // 32
+                    y_grid = y // 32
 
-                # Check if any tile on the segmented button was selected
-                if self.tile is not None:
+                    print(f"x: {x_grid + 1} y: {y_grid + 1}")
 
-                    # Replaces the tile and its cover, if there was already one on the place
-                    if self.tiles:
+                    # Check if any tile on the segmented button was selected
+                    if self.tile is not None:
+
+                        # Replaces the tile and its cover, if there was already one on the place
+                        if self.tiles:
+                            for tile in self.tiles:
+                                if tile.clicked(destroy=True):
+                                    for tileset in self.tilesets:
+                                        self.current_save[tileset] = [d for d in self.current_save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
+
+                                    # Destroy the cover on top of the tile
+                                    for cover in self.tile_collision_covers:
+                                        if cover.rect.collidepoint(x, y):
+                                            cover.kill()
+
+                            # Delete cover on top of the tile
+                            for cover in self.tile_collision_covers:
+                                if cover.rect.collidepoint(x, y):
+                                    cover.kill()
+
+                        # Creates the new tile
+                        tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
+                        self.tiles.add(tile)
+
+                        # Save it
+                        self.current_save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
+
+                        # Place the cover on top of collidable tiles
+                        if self.tilesets[self.current_tileset][self.tile_id]["collidable"]:
+                            cover = UIObject(self, tile.rect.x, tile.rect.y, tile.rect.width, tile.rect.height, color="green", srcalpha=50)
+                            self.tile_collision_covers.add(cover)
+
+                    # If a tile to pain was not selected
+                    else:
+
+                        # Destroy the clicked tiles on grid
                         for tile in self.tiles:
                             if tile.clicked(destroy=True):
                                 for tileset in self.tilesets:
                                     self.current_save[tileset] = [d for d in self.current_save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
-                                # Destroy the cover on top of the tile
-                                for cover in self.tile_collision_covers:
-                                    if cover.rect.collidepoint(x, y):
-                                        cover.kill()
-
-                        # Delete cover on top of the tile
-                        for cover in self.tile_collision_covers:
-                            if cover.rect.collidepoint(x, y):
-                                cover.kill()
-
-                    # Creates the new tile
-                    tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
-                    self.tiles.add(tile)
-
-                    # Save it
-                    self.current_save[self.current_tileset].append({"tile_id": self.tile_id, "position": [tile.rect.x, tile.rect.y], "collidable": self.tilesets[self.current_tileset][self.tile_id]["collidable"]})
-
-                    # Place the cover on top of collidable tiles
-                    if self.tilesets[self.current_tileset][self.tile_id]["collidable"]:
-                        cover = UIObject(self, tile.rect.x, tile.rect.y, tile.rect.width, tile.rect.height, color="green", srcalpha=50)
-                        self.tile_collision_covers.add(cover)
-
-                # If a tile to pain was not selected
-                else:
-
-                    # Destroy the clicked tiles on grid
-                    for tile in self.tiles:
-                        if tile.clicked(destroy=True):
-                            for tileset in self.tilesets:
-                                self.current_save[tileset] = [d for d in self.current_save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
-
-                        # Destroy the cover on top of the tile
-                        for cover in self.tile_collision_covers:
-                            if cover.rect.collidepoint(x, y):
-                                cover.kill()
+                            # Destroy the cover on top of the tile
+                            for cover in self.tile_collision_covers:
+                                if cover.rect.collidepoint(x, y):
+                                    cover.kill()
 
     def _asset_clicked(self):
         """Handles the choosing a tile from the segmented button"""
