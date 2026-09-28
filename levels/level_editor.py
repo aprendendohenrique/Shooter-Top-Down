@@ -89,9 +89,11 @@ class LevelEditor:
 
         # Clear Button
         clear_btn_image = pygame.image.load(self.UI_DIR / "x.png")
-        self.clear_button = Button(self, 115, 22, 64, 64, scale=0.8, image=clear_btn_image, lock_pos=True)
+        self.clear_button = Button(self, 115, 22, 64, 64, scale=0.8, command=self.change_clear_frame_visibility, image=clear_btn_image, lock_pos=True)
 
-        clear_frame_color = (100, 100, 100)
+        self.show_clear_frame = False
+
+        clear_frame_color = (125, 125, 125)
         self.clear_frame = UIObject(self, width=320, height=200, color=clear_frame_color, lock_pos=True)
         self.clear_frame.center()
 
@@ -99,12 +101,15 @@ class LevelEditor:
         self.clear_question_font = pygame.font.SysFont("bahnschrift", 16).render(clear_question_text, True, "black", clear_frame_color)
         self.clear_question_rect = self.clear_question_font.get_rect(centerx=self.screen_rect.width // 2, y=self.clear_frame.rect.y + 25)
 
-        clear_yes_no_background = (125, 125, 125)
+        clear_yes_no_background = (175, 175, 175)
         self.clear_yes_font = pygame.font.SysFont("consolas", 16).render("Yes", True, "black", clear_yes_no_background)
-        self.clear_yes_rect = self.clear_yes_font.get_rect(center=(self.screen_rect.width // 2 + 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
+        self.clear_yes_rect = self.clear_yes_font.get_rect(center=(self.screen_rect.width // 2 - 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
 
         self.clear_no_font = pygame.font.SysFont("consolas", 16).render("No", True, "black", clear_yes_no_background)
-        self.clear_no_rect = self.clear_yes_font.get_rect(center=(self.screen_rect.width // 2 - 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
+        self.clear_no_rect = self.clear_no_font.get_rect(center=(self.screen_rect.width // 2 + 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
+
+        self.clear_yes_button = Button(self, self.clear_yes_rect.x, self.clear_yes_rect.y, self.clear_yes_rect.width, self.clear_yes_rect.height, command=self.clear_map, lock_pos=True)
+        self.clear_no_button = Button(self, self.clear_no_rect.x, self.clear_no_rect.y, self.clear_no_rect.width, self.clear_no_rect.height, command=self.change_clear_frame_visibility, lock_pos=True)
 
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
@@ -171,11 +176,12 @@ class LevelEditor:
 
         # Clear Button
         self.clear_button.draw_me()
-        self.clear_frame.draw_me()
 
-        self.screen.blit(self.clear_question_font, self.clear_question_rect)
-        self.screen.blit(self.clear_yes_font, self.clear_yes_rect)
-        self.screen.blit(self.clear_no_font, self.clear_no_rect)
+        if self.show_clear_frame:
+            self.clear_frame.draw_me()
+            self.screen.blit(self.clear_question_font, self.clear_question_rect)
+            self.screen.blit(self.clear_yes_font, self.clear_yes_rect)
+            self.screen.blit(self.clear_no_font, self.clear_no_rect)
 
         # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
@@ -292,6 +298,12 @@ class LevelEditor:
         self.save_map_button.clicked()
 
         self._asset_clicked()
+
+        self.clear_button.clicked()
+
+        if self.show_clear_frame:
+            self.clear_yes_button.clicked()
+            self.clear_no_button.clicked()
 
     def _right_mouse_down_events(self):
         """Handles only click events"""
@@ -515,6 +527,20 @@ class LevelEditor:
                                                  color="green", srcalpha=50)
                                 self.tile_collision_covers.add(cover)
 
+    def change_clear_frame_visibility(self):
+        if self.show_clear_frame:
+            self.able_to_click_on_grid = True
+            self.show_clear_frame = False
+        else:
+            self.able_to_click_on_grid = False
+            self.show_clear_frame = True
+
+    def clear_map(self):
+        self.tiles.empty()
+        self.tile = None
+        self.tile_id = None
+
+        self.seg_button.kill()
 
 if __name__ == '__main__':
     le = LevelEditor()

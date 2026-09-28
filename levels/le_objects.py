@@ -3,7 +3,7 @@ import pygame
 
 class UIObject(Sprite):
 
-    def __init__(self, le_editor, x=0, y=0, width=0, height=0, color=None, image=None, lock_pos=False, srcalpha=255):
+    def __init__(self, le_editor, x=0, y=0, width=0, height=0, color=None, image=None, lock_pos=False, scale=1, srcalpha=255):
         """Dad class used in every UI Object"""
 
         super().__init__()
@@ -31,11 +31,13 @@ class UIObject(Sprite):
             self.image = image
 
         if self.image:
+            if scale != 1:
+                self.image = pygame.transform.scale_by(self.image, scale)
             self.rect.width = self.image.get_width()
             self.rect.height = self.image.get_height()
 
     def draw_me(self):
-        if self.visible:
+        if self.visible and self.image:
 
             # If lock_pos is true the object follow the camera object, if false, it doesn't
             if self.lock_pos:

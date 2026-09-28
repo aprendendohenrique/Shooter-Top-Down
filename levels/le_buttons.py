@@ -4,23 +4,12 @@ from le_objects import UIObject
 
 class Button(UIObject):
 
-    def __init__(self, le_editor, x, y, width, height, color=(0, 0, 0), image=None, scale=1, command=None, id=None, lock_pos=False):
+    def __init__(self, le_editor, x, y, width, height, color=None, image=None, scale=1, command=None, id=None, lock_pos=False):
         """Base class for all buttons"""
-        super().__init__(le_editor, x, y, width, height, lock_pos=lock_pos)
+        super().__init__(le_editor, x, y, width, height, color=color, image=image, scale=scale, lock_pos=lock_pos)
 
         self.command = command
         self.id = id
-
-        self.color = color
-
-        self.image = image
-        if scale != 1:
-            self.image = pygame.transform.scale_by(self.image, scale)
-
-        self.rect = pygame.Rect(x, y, width, height)
-        if self.image:
-            self.rect.width = self.image.get_width()
-            self.rect.height = self.image.get_height()
 
     def clicked(self):
         x, y = pygame.mouse.get_pos()
@@ -29,19 +18,6 @@ class Button(UIObject):
                 self.command()
             return self
         return None
-
-    def draw_me(self, surface=None):
-        if surface:
-            if self.image:
-                surface.blit(self.image, self.rect)
-            else:
-                pygame.draw.rect(surface, self.color, self.rect)
-        else:
-            if self.image:
-                self.screen.blit(self.image, self.rect)
-            else:
-                pygame.draw.rect(self.screen, self.color, self.rect)
-
 
 class SegmentedButton(UIObject):
 
