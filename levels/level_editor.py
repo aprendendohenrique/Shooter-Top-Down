@@ -1,6 +1,7 @@
 import json
 import sys
 from pathlib import Path
+from time import sleep
 
 import pygame
 
@@ -87,29 +88,43 @@ class LevelEditor:
         save_map_btn_image = pygame.image.load(self.UI_DIR / "save.png")
         self.save_map_button = Button(self, 70, 22, 64, 64, scale=0.8, command=self.save_map, image=save_map_btn_image, lock_pos=True)
 
-        # Clear Button
+        # Question Frame
+        self.show_question_frame = False
+
+        question_frame_color = (125, 125, 125)
+        self.question_frame = UIObject(self, width=320, height=200, color=question_frame_color, lock_pos=True)
+        self.question_frame.center()
+
+        question_yes_no_background = (175, 175, 175)
+        self.question_yes_font = pygame.font.SysFont("consolas", 16).render("Yes", True, "black", question_yes_no_background)
+        self.question_yes_rect = self.question_yes_font.get_rect(center=(self.screen_rect.width // 2 - 50, self.question_frame.rect.y + self.question_frame.rect.height - 25))
+
+        self.question_no_font = pygame.font.SysFont("consolas", 16).render("No", True, "black", question_yes_no_background)
+        self.question_no_rect = self.question_no_font.get_rect(center=(self.screen_rect.width // 2 + 50, self.question_frame.rect.y + self.question_frame.rect.height - 25))
+
+        # Trash
+        trash_btn_image = pygame.image.load(self.UI_DIR / "trash.png")
+        self.trash_button = Button(self, 115, 22, 64, 64, scale=0.8, command=self.trash_action, image=trash_btn_image, lock_pos=True)
+
+        trash_question_text = "Do you wanna start from scratch?"
+        self.trash_question_font = pygame.font.SysFont("bahnschrift", 16).render(trash_question_text, True, "black", question_frame_color)
+        self.trash_question_rect = self.trash_question_font.get_rect(centerx=self.screen_rect.width // 2, y=self.question_frame.rect.y + 25)
+
+        self.trash_yes_button = Button(self, self.question_yes_rect.x, self.question_yes_rect.y, self.question_yes_rect.width, self.question_yes_rect.height, command=self.clear_all, lock_pos=True)
+        self.trash_no_button = Button(self, self.question_no_rect.x, self.question_no_rect.y, self.question_no_rect.width, self.question_no_rect.height, command=self.trash_action, lock_pos=True)
+
+        self.trash_on = False
+
+        # Clear
         clear_btn_image = pygame.image.load(self.UI_DIR / "x.png")
-        self.clear_button = Button(self, 115, 22, 64, 64, scale=0.8, command=self.change_clear_frame_visibility, image=clear_btn_image, lock_pos=True)
+        self.clear_button = Button(self, 160, 22, 64, 64, scale=0.8, command=self.change_question_frame_visibility, image=clear_btn_image, lock_pos=True)
 
-        self.show_clear_frame = False
+        clear_question_text = "Do you wanna clear the grid?"
+        self.clear_question_font = pygame.font.SysFont("bahnschrift", 16).render(clear_question_text, True, "black", question_frame_color)
+        self.clear_question_rect = self.clear_question_font.get_rect(centerx=self.screen_rect.width // 2, y=self.question_frame.rect.y + 25)
 
-        clear_frame_color = (125, 125, 125)
-        self.clear_frame = UIObject(self, width=320, height=200, color=clear_frame_color, lock_pos=True)
-        self.clear_frame.center()
-
-        clear_question_text = "Do you wanna start from scratch?"
-        self.clear_question_font = pygame.font.SysFont("bahnschrift", 16).render(clear_question_text, True, "black", clear_frame_color)
-        self.clear_question_rect = self.clear_question_font.get_rect(centerx=self.screen_rect.width // 2, y=self.clear_frame.rect.y + 25)
-
-        clear_yes_no_background = (175, 175, 175)
-        self.clear_yes_font = pygame.font.SysFont("consolas", 16).render("Yes", True, "black", clear_yes_no_background)
-        self.clear_yes_rect = self.clear_yes_font.get_rect(center=(self.screen_rect.width // 2 - 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
-
-        self.clear_no_font = pygame.font.SysFont("consolas", 16).render("No", True, "black", clear_yes_no_background)
-        self.clear_no_rect = self.clear_no_font.get_rect(center=(self.screen_rect.width // 2 + 50, self.clear_frame.rect.y + self.clear_frame.rect.height - 25))
-
-        self.clear_yes_button = Button(self, self.clear_yes_rect.x, self.clear_yes_rect.y, self.clear_yes_rect.width, self.clear_yes_rect.height, command=self.clear_map, lock_pos=True)
-        self.clear_no_button = Button(self, self.clear_no_rect.x, self.clear_no_rect.y, self.clear_no_rect.width, self.clear_no_rect.height, command=self.change_clear_frame_visibility, lock_pos=True)
+        self.clear_yes_button = Button(self, self.question_yes_rect.x, self.question_yes_rect.y, self.question_yes_rect.width, self.question_yes_rect.height, command=self.clear_map, lock_pos=True)
+        self.clear_no_button = Button(self, self.question_no_rect.x, self.question_no_rect.y, self.question_no_rect.width, self.question_no_rect.height, command=self.change_question_frame_visibility, lock_pos=True)
 
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
@@ -174,14 +189,20 @@ class LevelEditor:
         self.load_tileset_button.draw_me()
         self.save_map_button.draw_me()
 
-        # Clear Button
+        # Trash/Clear Button
+        self.trash_button.draw_me()
         self.clear_button.draw_me()
 
-        if self.show_clear_frame:
-            self.clear_frame.draw_me()
-            self.screen.blit(self.clear_question_font, self.clear_question_rect)
-            self.screen.blit(self.clear_yes_font, self.clear_yes_rect)
-            self.screen.blit(self.clear_no_font, self.clear_no_rect)
+        if self.show_question_frame:
+            self.question_frame.draw_me()
+
+            if self.trash_on:
+                self.screen.blit(self.trash_question_font, self.trash_question_rect)
+            else:
+                self.screen.blit(self.clear_question_font, self.clear_question_rect)
+
+            self.screen.blit(self.question_yes_font, self.question_yes_rect)
+            self.screen.blit(self.question_no_font, self.question_no_rect)
 
         # Lines that shows the middle of the screen
         horizontal = pygame.draw.line(self.screen, "red", (self.screen.get_width()/2, 0), (self.screen.get_width()/2, self.screen.get_height()))
@@ -294,21 +315,27 @@ class LevelEditor:
         """Handles only click events"""
 
         # Buttons
-        if self.seg_button:
-            self.left_arrow_button.clicked()
-            self.right_arrow_button.clicked()
 
-        self.load_tileset_button.clicked()
+        if self.show_question_frame:
+            if self.trash_on:
+                self.trash_yes_button.clicked()
+                self.trash_no_button.clicked()
+            else:
+                self.clear_yes_button.clicked()
+                self.clear_no_button.clicked()
+        else:
+            if self.seg_button:
+                self.left_arrow_button.clicked()
+                self.right_arrow_button.clicked()
 
-        self.save_map_button.clicked()
+            self.load_tileset_button.clicked()
 
-        self._asset_clicked()
+            self.save_map_button.clicked()
 
-        self.clear_button.clicked()
+            self._asset_clicked()
 
-        if self.show_clear_frame:
-            self.clear_yes_button.clicked()
-            self.clear_no_button.clicked()
+            self.trash_button.clicked()
+            self.clear_button.clicked()
 
     def _right_mouse_down_events(self):
         """Handles only click events"""
@@ -534,19 +561,25 @@ class LevelEditor:
                                                  color="green", srcalpha=50)
                                 self.tile_collision_covers.add(cover)
 
-    def change_clear_frame_visibility(self):
-        if self.show_clear_frame:
+    def trash_action(self):
+        if self.trash_on:
+            self.trash_on = False
+        else:
+            self.trash_on = True
+        self.change_question_frame_visibility()
+
+    def change_question_frame_visibility(self):
+        if self.show_question_frame:
             self.able_to_click_on_grid = True
-            self.show_clear_frame = False
+            self.show_question_frame = False
         else:
             self.able_to_click_on_grid = False
-            self.show_clear_frame = True
+            self.show_question_frame = True
 
-    def clear_map(self):
+    def clear_all(self):
         self.tilesets = {}
         self.current_tileset = None
 
-        self.tiles.empty()
         self.tile = None
         self.tile_id = None
 
@@ -554,11 +587,20 @@ class LevelEditor:
         self.seg_button = None
 
         self.seg_button_covers.empty()
-        self.tile_collision_covers.empty()
+
+        self.clear_map()
 
         self.current_save = {}
 
-        self.change_clear_frame_visibility()
+        self.trash_on = False
+
+    def clear_map(self):
+        for tileset_save in self.current_save.values():
+            del tileset_save[:]
+        self.tiles.empty()
+        self.tile_collision_covers.empty()
+        self.change_question_frame_visibility()
+
 
 if __name__ == '__main__':
     le = LevelEditor()
