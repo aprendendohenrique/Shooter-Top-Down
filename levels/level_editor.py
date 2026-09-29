@@ -249,7 +249,12 @@ class LevelEditor:
     def save_map(self):
         """Simple save function"""
 
+        self.able_to_click_on_grid = True
+
         save_path = FileUtils.save_json()
+
+        self.able_to_click_on_grid = False
+
         try:
             with open(save_path, "w") as file:
                 json.dump(self.current_save, file, indent=4)
@@ -490,7 +495,9 @@ class LevelEditor:
 
         # Opens the window to choose the tileset
         if path is None:
+            self.able_to_click_on_grid = False
             tileset_path = FileUtils.choose_image()
+            self.able_to_click_on_grid = True
         else:
             tileset_path = Path(path)
 
@@ -536,11 +543,22 @@ class LevelEditor:
             self.show_clear_frame = True
 
     def clear_map(self):
+        self.tilesets = {}
+        self.current_tileset = None
+
         self.tiles.empty()
         self.tile = None
         self.tile_id = None
 
-        self.seg_button.kill()
+        # self.seg_button.kill()
+        self.seg_button = None
+
+        self.seg_button_covers.empty()
+        self.tile_collision_covers.empty()
+
+        self.current_save = {}
+
+        self.change_clear_frame_visibility()
 
 if __name__ == '__main__':
     le = LevelEditor()
