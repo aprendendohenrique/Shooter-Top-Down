@@ -82,11 +82,17 @@ class LevelEditor:
         self.seg_group_buttons.add(self.left_arrow_button)
         self.seg_group_buttons.add(self.right_arrow_button)
 
+        # Load tileset
         load_tileset_btn_image = pygame.image.load(self.UI_DIR / "clipboard.png")
         self.load_tileset_button = Button(self, 25, 25, 64, 64, scale=0.7, command=self.load_tileset, image=load_tileset_btn_image, lock_pos=True)
 
+        # Save map
         save_map_btn_image = pygame.image.load(self.UI_DIR / "save.png")
         self.save_map_button = Button(self, 70, 22, 64, 64, scale=0.8, command=self.save_map, image=save_map_btn_image, lock_pos=True)
+
+        # Load map
+        load_map_btn_image = pygame.image.load(self.UI_DIR / "import.png")
+        self.load_map_button = Button(self, 117, 26, 64, 64, scale=0.7, command=self.load_map_action, image=load_map_btn_image, lock_pos=True)
 
         # Question Frame
         self.show_question_frame = False
@@ -104,7 +110,7 @@ class LevelEditor:
 
         # Trash
         trash_btn_image = pygame.image.load(self.UI_DIR / "trash.png")
-        self.trash_button = Button(self, 115, 22, 64, 64, scale=0.8, command=self.trash_action, image=trash_btn_image, lock_pos=True)
+        self.trash_button = Button(self, 160, 22, 64, 64, scale=0.8, command=self.trash_action, image=trash_btn_image, lock_pos=True)
 
         trash_question_text = "Do you wanna start from scratch?"
         self.trash_question_font = pygame.font.SysFont("bahnschrift", 16).render(trash_question_text, True, "black", question_frame_color)
@@ -117,7 +123,7 @@ class LevelEditor:
 
         # Clear
         clear_btn_image = pygame.image.load(self.UI_DIR / "x.png")
-        self.clear_button = Button(self, 160, 22, 64, 64, scale=0.8, command=self.change_question_frame_visibility, image=clear_btn_image, lock_pos=True)
+        self.clear_button = Button(self, 205, 22, 64, 64, scale=0.8, command=self.change_question_frame_visibility, image=clear_btn_image, lock_pos=True)
 
         clear_question_text = "Do you wanna clear the grid?"
         self.clear_question_font = pygame.font.SysFont("bahnschrift", 16).render(clear_question_text, True, "black", question_frame_color)
@@ -188,6 +194,7 @@ class LevelEditor:
 
         self.load_tileset_button.draw_me()
         self.save_map_button.draw_me()
+        self.load_map_button.draw_me()
 
         # Trash/Clear Button
         self.trash_button.draw_me()
@@ -270,11 +277,11 @@ class LevelEditor:
     def save_map(self):
         """Simple save function"""
 
-        self.able_to_click_on_grid = True
+        self.able_to_click_on_grid = False
 
         save_path = FileUtils.save_json()
 
-        self.able_to_click_on_grid = False
+        self.able_to_click_on_grid = True
 
         try:
             with open(save_path, "w") as file:
@@ -331,6 +338,8 @@ class LevelEditor:
             self.load_tileset_button.clicked()
 
             self.save_map_button.clicked()
+
+            self.load_map_button.clicked()
 
             self._asset_clicked()
 
@@ -496,8 +505,8 @@ class LevelEditor:
 
         seg_btn_images = [sprite["surface"] for sprite in self.tilesets[self.current_tileset]]
 
-        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True,
-                                          lock_pos=True)
+        self.seg_button = SegmentedButton(self, self.seg_button_x, 0, 5, images=seg_btn_images, vertical=True,lock_pos=True)
+
         self.seg_button.center_y().move_me(0, self.seg_button_y)
 
         self.seg_group_buttons.add(self.seg_button)
@@ -537,29 +546,29 @@ class LevelEditor:
             # Change the seg_button to the new Tileset
             self.change_tileset(tileset_path)
 
-    def load_map(self):
-        with open(self.BASE_DIR / "last_save.json", "r") as file:
-            path = file.readline()
+    def load_map(self, path="last_save.json"):
+        if path == "last_save.json":
+            with open(self.BASE_DIR / "last_save.json", "r") as file:
+                path = file.readline()
+        if path:
+            with open(path, "r") as save_file:
+                self.current_save = json.load(save_file)
 
-            if path:
-                with open(path, "r") as save_file:
-                    self.current_save = json.load(save_file)
+                # Load Tileset
+                for tileset in self.current_save.keys():
+                    self.load_tileset(tileset)
 
-                    # Load Tileset
-                    for tileset in self.current_save.keys():
-                        self.load_tileset(tileset)
+                    # Load Tiles
+                    for tile in self.current_save[tileset]:
+                        t = Tile(self, tile["position"][0], tile["position"][1],
+                                 self.tilesets[tileset][tile["tile_id"]]["surface"])
+                        self.tiles.add(t)
 
-                        # Load Tiles
-                        for tile in self.current_save[tileset]:
-                            t = Tile(self, tile["position"][0], tile["position"][1],
-                                     self.tilesets[tileset][tile["tile_id"]]["surface"])
-                            self.tiles.add(t)
-
-                            # Place cover on top, if tile is collidable
-                            if tile["collidable"]:
-                                cover = UIObject(self, t.rect.x, t.rect.y, t.rect.width, t.rect.height,
-                                                 color="green", srcalpha=50)
-                                self.tile_collision_covers.add(cover)
+                        # Place cover on top, if tile is collidable
+                        if tile["collidable"]:
+                            cover = UIObject(self, t.rect.x, t.rect.y, t.rect.width, t.rect.height,
+                                             color="green", srcalpha=50)
+                            self.tile_collision_covers.add(cover)
 
     def trash_action(self):
         if self.trash_on:
@@ -567,6 +576,15 @@ class LevelEditor:
         else:
             self.trash_on = True
         self.change_question_frame_visibility()
+
+    def load_map_action(self):
+        self.clear_all()
+
+        self.able_to_click_on_grid = False
+        load_path = FileUtils.load_json()
+        self.able_to_click_on_grid = True
+
+        self.load_map(path=load_path)
 
     def change_question_frame_visibility(self):
         if self.show_question_frame:
@@ -599,7 +617,10 @@ class LevelEditor:
             del tileset_save[:]
         self.tiles.empty()
         self.tile_collision_covers.empty()
-        self.change_question_frame_visibility()
+
+        self.able_to_click_on_grid = True
+        self.show_question_frame = False
+        self.trash_on = False
 
 
 if __name__ == '__main__':

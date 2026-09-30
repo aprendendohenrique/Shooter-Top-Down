@@ -37,13 +37,13 @@ class SegmentedButton(UIObject):
 
         if vertical:
             for count, image in enumerate(self.images):
-                button = Button(self.le_editor, x, self.y, self.tile_width, self.tile_height, image=image, id=count)
+                button = Button(self.le_editor, x, self.y, self.tile_width, self.tile_height, image=image, id=count, lock_pos=True)
                 self.objects.append(button)
 
                 self.y += self.spacing
         else:
             for count, image in enumerate(self.images):
-                button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, id=count)
+                button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, id=count, lock_pos=True)
                 self.objects.append(button)
 
                 self.x += self.spacing

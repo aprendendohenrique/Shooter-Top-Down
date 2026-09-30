@@ -34,3 +34,13 @@ class FileUtils:
         root.destroy()
 
         return path
+
+    @staticmethod
+    def load_json():
+        root = tk.Tk()
+        root.withdraw()
+
+        path = Path(filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")]))
+        root.destroy()
+
+        return path
