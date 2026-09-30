@@ -21,7 +21,7 @@ class Button(UIObject):
 
 class SegmentedButton(UIObject):
 
-    def __init__(self, le_editor, x, y, spacing, color=(0, 0, 0), images=None, vertical=False, lock_pos=False):
+    def __init__(self, le_editor, x, y, spacing, color=(0, 0, 0), images=None, scale=1, vertical=False, lock_pos=False):
         """Class that creates many buttons that only one can be selected."""
         super().__init__(le_editor, x, y, lock_pos=lock_pos)
 
@@ -37,13 +37,13 @@ class SegmentedButton(UIObject):
 
         if vertical:
             for count, image in enumerate(self.images):
-                button = Button(self.le_editor, x, self.y, self.tile_width, self.tile_height, image=image, id=count, lock_pos=True)
+                button = Button(self.le_editor, x, self.y, self.tile_width, self.tile_height, image=image, scale=scale, id=count, lock_pos=True)
                 self.objects.append(button)
 
                 self.y += self.spacing
         else:
             for count, image in enumerate(self.images):
-                button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, id=count, lock_pos=True)
+                button = Button(self.le_editor, self.x, y, self.tile_width, self.tile_height, image=image, scale=scale, id=count, lock_pos=True)
                 self.objects.append(button)
 
                 self.x += self.spacing

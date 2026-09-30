@@ -4,6 +4,7 @@ from pathlib import Path
 from time import sleep
 
 import pygame
+from matplotlib.pyplot import title
 
 from le_file_utils import FileUtils
 from le_settings import LESettings
@@ -41,9 +42,11 @@ class LevelEditor:
         self.tiles = pygame.sprite.Group()
 
         # Selected tile on the segmented button
+        self.last_tile = None
         self.tile = None
 
         # Tile id of the selected tile
+        self.last_tile_id = None
         self.tile_id = None
 
         self.show_grid = True
@@ -88,11 +91,11 @@ class LevelEditor:
 
         # Save map
         save_map_btn_image = pygame.image.load(self.UI_DIR / "save.png")
-        self.save_map_button = Button(self, 70, 22, 64, 64, scale=0.8, command=self.save_map, image=save_map_btn_image, lock_pos=True)
+        self.save_map_button = Button(self, 65, 22, 64, 64, scale=0.8, command=self.save_map, image=save_map_btn_image, lock_pos=True)
 
         # Load map
         load_map_btn_image = pygame.image.load(self.UI_DIR / "import.png")
-        self.load_map_button = Button(self, 117, 26, 64, 64, scale=0.7, command=self.load_map_action, image=load_map_btn_image, lock_pos=True)
+        self.load_map_button = Button(self, 112, 26, 64, 64, scale=0.7, command=self.load_map_action, image=load_map_btn_image, lock_pos=True)
 
         # Question Frame
         self.show_question_frame = False
@@ -110,7 +113,7 @@ class LevelEditor:
 
         # Trash
         trash_btn_image = pygame.image.load(self.UI_DIR / "trash.png")
-        self.trash_button = Button(self, 160, 22, 64, 64, scale=0.8, command=self.trash_action, image=trash_btn_image, lock_pos=True)
+        self.trash_button = Button(self, 155, 22, 64, 64, scale=0.8, command=self.trash_action, image=trash_btn_image, lock_pos=True)
 
         trash_question_text = "Do you wanna start from scratch?"
         self.trash_question_font = pygame.font.SysFont("bahnschrift", 16).render(trash_question_text, True, "black", question_frame_color)
@@ -123,7 +126,7 @@ class LevelEditor:
 
         # Clear
         clear_btn_image = pygame.image.load(self.UI_DIR / "x.png")
-        self.clear_button = Button(self, 205, 22, 64, 64, scale=0.8, command=self.change_question_frame_visibility, image=clear_btn_image, lock_pos=True)
+        self.clear_button = Button(self, 200, 22, 64, 64, scale=0.8, command=self.change_question_frame_visibility, image=clear_btn_image, lock_pos=True)
 
         clear_question_text = "Do you wanna clear the grid?"
         self.clear_question_font = pygame.font.SysFont("bahnschrift", 16).render(clear_question_text, True, "black", question_frame_color)
@@ -131,6 +134,15 @@ class LevelEditor:
 
         self.clear_yes_button = Button(self, self.question_yes_rect.x, self.question_yes_rect.y, self.question_yes_rect.width, self.question_yes_rect.height, command=self.clear_map, lock_pos=True)
         self.clear_no_button = Button(self, self.question_no_rect.x, self.question_no_rect.y, self.question_no_rect.width, self.question_no_rect.height, command=self.change_question_frame_visibility, lock_pos=True)
+
+        # Tools: Paint, Erase, Fill
+        paint_btn_image = pygame.image.load(self.UI_DIR / "brush.png")
+        erase_btn_image = pygame.image.load(self.UI_DIR / "eraser.png")
+        fill_btn_image = pygame.image.load(self.UI_DIR / "fill.png")
+
+        tools_images = [paint_btn_image, erase_btn_image, fill_btn_image]
+        self.tools_seg_button = SegmentedButton(self, 270, 21, spacing=-15, images=tools_images, scale=0.85, lock_pos=True)
+        self.tools_seg_button.center_x()
 
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
@@ -199,6 +211,9 @@ class LevelEditor:
         # Trash/Clear Button
         self.trash_button.draw_me()
         self.clear_button.draw_me()
+
+        # Tools Button
+        self.tools_seg_button.draw_me()
 
         if self.show_question_frame:
             self.question_frame.draw_me()
@@ -343,6 +358,8 @@ class LevelEditor:
 
             self._asset_clicked()
 
+            self.tools_action()
+
             self.trash_button.clicked()
             self.clear_button.clicked()
 
@@ -456,7 +473,10 @@ class LevelEditor:
 
                 # Sets the tile to the clicked tile and its id too
                 self.tile = self.seg_button.images[button_id]
+                self.last_tile = self.tile
+
                 self.tile_id = button_id
+                self.last_tile_id = self.tile_id
 
             # If it is the same from before
             else:
@@ -598,7 +618,10 @@ class LevelEditor:
         self.tilesets = {}
         self.current_tileset = None
 
+        self.last_tile = None
         self.tile = None
+
+        self.last_tile_id = None
         self.tile_id = None
 
         # self.seg_button.kill()
@@ -621,6 +644,23 @@ class LevelEditor:
         self.able_to_click_on_grid = True
         self.show_question_frame = False
         self.trash_on = False
+
+    def tools_action(self):
+        button_id = self.tools_seg_button.clicked()
+
+        # If any button was clicked...
+        if button_id is not None:
+            if button_id == 0:
+                # Pencil
+                self.tile = self.last_tile
+                self.tile_id = self.last_tile_id
+            elif button_id == 1:
+                # Eraser
+                self.tile = None
+                self.tile_id = None
+            else:
+                # Fill
+                ...
 
 
 if __name__ == '__main__':
