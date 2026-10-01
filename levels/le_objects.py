@@ -191,15 +191,51 @@ class UIObject(Sprite):
 
 class Tile(UIObject):
     
-    def __init__(self, le_editor, x, y, image):
-        super().__init__(le_editor, x, y)
-        self.le_editor = le_editor
-        self.image = image
-        self.rect.width = self.image.get_width()
-        self.rect.height = self.image.get_height()
+    def __init__(self, le_editor, x, y, image, fill=False, directions=None):
+        super().__init__(le_editor, x, y, image=image)
 
-    def draw_me(self):
-        self.screen.blit(self.image, self.rect.move(-self.le_editor.screen_x, -self.le_editor.screen_y))
+        # If fill is true and the tile is on top of another tile or outside the grid, it destroys itself
+        if fill:
+            killed = False
+
+            if x < -self.settings.grid_size or y < -self.settings.grid_size or x > self.settings.grid_size + le_editor.screen_rect.width or y > self.settings.grid_size + le_editor.screen_rect.height:
+                killed = True
+                self.kill()
+
+            for tile in le_editor.tiles:
+                if self.rect.colliderect(tile.rect):
+                    killed = True
+                    self.kill()
+                    break
+
+            if not killed:
+                if directions is not None:
+                    if directions[0] == -1 or directions[0] == 0:
+                        if (x - self.settings.TILE_SIZE, y) not in le_editor.fill_visited:
+                            le_editor.fill_visited.append((x - self.settings.TILE_SIZE, y))
+                            left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, True, directions=(-1, 0))
+                            le_editor.tiles.add(left_tile)
+                    if directions[0] == 1 or directions[0] == 0:
+                        if (x + self.settings.TILE_SIZE, y) not in le_editor.fill_visited:
+                            le_editor.fill_visited.append((x + self.settings.TILE_SIZE, y))
+                            right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, True, directions=(1, 0))
+                            le_editor.tiles.add(right_tile)
+                    if directions[1] == 1 or directions[1] == 0:
+                        if (x , y + self.settings.TILE_SIZE) not in le_editor.fill_visited:
+                            le_editor.fill_visited.append((x, y + self.settings.TILE_SIZE))
+                            top_tile = Tile(le_editor, x , y + self.settings.TILE_SIZE, image, True, directions=(0, 1))
+                            le_editor.tiles.add(top_tile)
+                    if directions[1] == -1 or directions[1] == 0:
+                        if (x, y - self.settings.TILE_SIZE) not in le_editor.fill_visited:
+                            le_editor.fill_visited.append((x, y - self.settings.TILE_SIZE))
+                            bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, True, directions=(0, -1))
+                            le_editor.tiles.add(bottom_tile)
+                else:
+                    left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, True, directions=(-1, 0))
+                    right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, True, directions=(1, 0))
+                    top_tile = Tile(le_editor, x, y + self.settings.TILE_SIZE, image, True, directions=(0, 1))
+                    bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, True, directions=(0, -1))
+                    le_editor.tiles.add(left_tile, right_tile, top_tile, bottom_tile)
 
     def clicked(self, destroy=False):
         x, y = pygame.mouse.get_pos()
@@ -229,4 +265,4 @@ class CameraObject(UIObject):
         elif self.rect.y - self.screen_rect.height // 2 < -self.settings.grid_size:
             self.rect.y = -self.settings.grid_size + self.screen_rect.height // 2
 
-        return (self)
+        return self

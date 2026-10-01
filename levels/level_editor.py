@@ -144,6 +144,9 @@ class LevelEditor:
         self.tools_seg_button = SegmentedButton(self, 270, 21, spacing=-15, images=tools_images, scale=0.85, lock_pos=True)
         self.tools_seg_button.center_x()
 
+        self.fill_visited = []
+        self.fill = False
+
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
 
@@ -272,6 +275,7 @@ class LevelEditor:
                 # Left mouse button up
                 if not pygame.mouse.get_pressed(num_buttons=3)[0]:
                     self.left_mouse_button_down = False
+                    self._left_mouse_up_events()
 
                 # Right mouse button down
                 if not pygame.mouse.get_pressed(num_buttons=3)[2]:
@@ -363,6 +367,9 @@ class LevelEditor:
             self.trash_button.clicked()
             self.clear_button.clicked()
 
+    def _left_mouse_up_events(self):
+        self.fill_visited = []
+
     def _right_mouse_down_events(self):
         """Handles only click events"""
 
@@ -431,7 +438,13 @@ class LevelEditor:
                                     cover.kill()
 
                         # Creates the new tile
-                        tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE, self.tile)
+                        if self.fill:
+                            tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE,
+                                        self.tile, fill=True)
+                        else:
+                            tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE,
+                                        self.tile, fill=False)
+
                         self.tiles.add(tile)
 
                         # Save it
@@ -654,13 +667,23 @@ class LevelEditor:
                 # Pencil
                 self.tile = self.last_tile
                 self.tile_id = self.last_tile_id
+
+                self.fill = False
             elif button_id == 1:
                 # Eraser
                 self.tile = None
                 self.tile_id = None
+
+                self.fill = False
             else:
                 # Fill
-                ...
+                self.tile = self.last_tile
+                self.tile_id = self.last_tile_id
+
+                if self.fill:
+                    self.fill = False
+                else:
+                    self.fill = True
 
 
 if __name__ == '__main__':
