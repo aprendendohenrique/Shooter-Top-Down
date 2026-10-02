@@ -12,7 +12,7 @@ class TileSetReader:
         except FileNotFoundError:
             return None
 
-        # Checks if its possible to separate the image in tiles with the given size
+        # Checks if it's possible to separate the image in tiles with the given size
         if image.get_width() % x_tile_size == 0 and image.get_height() % y_tile_size == 0:
             tiles = []
 

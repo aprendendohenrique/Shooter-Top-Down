@@ -191,8 +191,9 @@ class UIObject(Sprite):
 
 class Tile(UIObject):
     
-    def __init__(self, le_editor, x, y, image, fill=False, directions=None):
+    def __init__(self, le_editor, x, y, image, tileset, fill=False, clicked_tile_image=None, directions=None):
         super().__init__(le_editor, x, y, image=image)
+        self.tileset = tileset
 
         # If fill is true and the tile is on top of another tile or outside the grid, it destroys itself
         if fill:
@@ -203,7 +204,15 @@ class Tile(UIObject):
                 self.kill()
 
             for tile in le_editor.tiles:
-                if self.rect.colliderect(tile.rect):
+                if clicked_tile_image is not None:
+                    if self.rect.colliderect(tile.rect) and clicked_tile_image == tile.image:
+                        break
+                    killed = True
+                    self.kill()
+                    break
+                elif self.rect.colliderect(tile.rect):
+                    print("FOI1")
+                    """<----- Aqui ó achar o porque desse trem não ta funcionando"""
                     killed = True
                     self.kill()
                     break
@@ -213,28 +222,48 @@ class Tile(UIObject):
                     if directions[0] == -1 or directions[0] == 0:
                         if (x - self.settings.TILE_SIZE, y) not in le_editor.fill_visited:
                             le_editor.fill_visited.append((x - self.settings.TILE_SIZE, y))
-                            left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, True, directions=(-1, 0))
+                            if clicked_tile_image is not None:
+                                left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, tileset, True,
+                                                 clicked_tile_image, directions=(-1, 0))
+                            else:
+                                left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, tileset, True,
+                                                 directions=(-1, 0))
                             le_editor.tiles.add(left_tile)
                     if directions[0] == 1 or directions[0] == 0:
                         if (x + self.settings.TILE_SIZE, y) not in le_editor.fill_visited:
                             le_editor.fill_visited.append((x + self.settings.TILE_SIZE, y))
-                            right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, True, directions=(1, 0))
+                            if clicked_tile_image is not None:
+                                right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, tileset, True,
+                                                  clicked_tile_image, directions=(1, 0))
+                            else:
+                                right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, tileset, True,
+                                                  directions=(1, 0))
                             le_editor.tiles.add(right_tile)
                     if directions[1] == 1 or directions[1] == 0:
-                        if (x , y + self.settings.TILE_SIZE) not in le_editor.fill_visited:
+                        if (x, y + self.settings.TILE_SIZE) not in le_editor.fill_visited:
                             le_editor.fill_visited.append((x, y + self.settings.TILE_SIZE))
-                            top_tile = Tile(le_editor, x , y + self.settings.TILE_SIZE, image, True, directions=(0, 1))
+                            if clicked_tile_image is not None:
+                                top_tile = Tile(le_editor, x, y + self.settings.TILE_SIZE, image, tileset, True,
+                                                clicked_tile_image, directions=(0, 1))
+                            else:
+                                top_tile = Tile(le_editor, x, y + self.settings.TILE_SIZE, image, tileset, True,
+                                                directions=(0, 1))
                             le_editor.tiles.add(top_tile)
                     if directions[1] == -1 or directions[1] == 0:
                         if (x, y - self.settings.TILE_SIZE) not in le_editor.fill_visited:
                             le_editor.fill_visited.append((x, y - self.settings.TILE_SIZE))
-                            bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, True, directions=(0, -1))
+                            if clicked_tile_image is not None:
+                                bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, tileset, True,
+                                                   clicked_tile_image, directions=(0, -1))
+                            else:
+                                bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, tileset, True,
+                                                   directions=(0, -1))
                             le_editor.tiles.add(bottom_tile)
                 else:
-                    left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, True, directions=(-1, 0))
-                    right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, True, directions=(1, 0))
-                    top_tile = Tile(le_editor, x, y + self.settings.TILE_SIZE, image, True, directions=(0, 1))
-                    bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, True, directions=(0, -1))
+                    left_tile = Tile(le_editor, x - self.settings.TILE_SIZE, y, image, tileset, True, directions=(-1, 0))
+                    right_tile = Tile(le_editor, x + self.settings.TILE_SIZE, y, image, tileset, True, directions=(1, 0))
+                    top_tile = Tile(le_editor, x, y + self.settings.TILE_SIZE, image, tileset, True, directions=(0, 1))
+                    bottom_tile = Tile(le_editor, x, y - self.settings.TILE_SIZE, image, tileset, True, directions=(0, -1))
                     le_editor.tiles.add(left_tile, right_tile, top_tile, bottom_tile)
 
     def clicked(self, destroy=False):

@@ -146,6 +146,7 @@ class LevelEditor:
 
         self.fill_visited = []
         self.fill = False
+        self.clicked_tile_image = None
 
         # Tile covers, covers that show when the collision is On/Off
         self.seg_button_covers = pygame.sprite.Group()
@@ -424,6 +425,7 @@ class LevelEditor:
                         if self.tiles:
                             for tile in self.tiles:
                                 if tile.clicked(destroy=True):
+                                    self.clicked_tile_image = tile.image
                                     for tileset in self.tilesets:
                                         self.current_save[tileset] = [d for d in self.current_save[tileset] if d.get("position") != [x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE]]
 
@@ -438,12 +440,16 @@ class LevelEditor:
                                     cover.kill()
 
                         # Creates the new tile
-                        if self.fill:
-                            tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE,
-                                        self.tile, fill=True)
+                        if self.fill and self.clicked_tile_image != self.tile:
+                            if self.clicked_tile_image is not None:
+                                tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE,
+                                            self.tile, self.current_tileset, fill=True, clicked_tile_image=self.clicked_tile_image)
+                            else:
+                                tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE,
+                                            self.tile, self.current_tileset, fill=True)
                         else:
                             tile = Tile(self, x_grid * self.settings.TILE_SIZE, y_grid * self.settings.TILE_SIZE,
-                                        self.tile, fill=False)
+                                        self.tile, self.current_tileset, fill=False)
 
                         self.tiles.add(tile)
 
@@ -594,7 +600,7 @@ class LevelEditor:
                     # Load Tiles
                     for tile in self.current_save[tileset]:
                         t = Tile(self, tile["position"][0], tile["position"][1],
-                                 self.tilesets[tileset][tile["tile_id"]]["surface"])
+                                 self.tilesets[tileset][tile["tile_id"]]["surface"], tileset)
                         self.tiles.add(t)
 
                         # Place cover on top, if tile is collidable
